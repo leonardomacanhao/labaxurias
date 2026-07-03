@@ -8,15 +8,25 @@ var builder = WebApplication.CreateBuilder(args);
 // SERVICES
 // =========================
 
-// Controllers
 builder.Services.AddControllers();
-
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// SignalR (CORRETO AQUI)
+// SignalR
 builder.Services.AddSignalR();
+
+// CORS (CORRETO)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocal", policy =>
+    {
+        policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true) // <- IMPORTANTE p/ dev local + SignalR
+            .AllowCredentials();
+    });
+});
 
 // DbContext + SQLite
 builder.Services.AddDbContext<LabaxuriasDbContext>(options =>
@@ -34,7 +44,6 @@ builder.Services.AddDbContext<LabaxuriasDbContext>(options =>
     );
 
     var directory = Path.GetDirectoryName(dbPath);
-
     if (!Directory.Exists(directory))
         Directory.CreateDirectory(directory!);
 
@@ -42,35 +51,40 @@ builder.Services.AddDbContext<LabaxuriasDbContext>(options =>
 });
 
 // =========================
-// APP BUILD
+// APP
 // =========================
 
 var app = builder.Build();
 
-// =========================
-// PIPELINE
-// =========================
-
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// cria banco
+// HTTPS
+app.UseHttpsRedirection();
+
+
+app.UseRouting();
+
+// CORS (TEM QUE VIR AQUI)
+app.UseCors("AllowLocal");
+
+app.UseAuthorization();
+
+// Controllers
+app.MapControllers();
+
+// SignalR
+app.MapHub<CallHub>("/hubs/call");
+
+// Criação do banco
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<LabaxuriasDbContext>();
     db.Database.EnsureCreated();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-// SignalR endpoint (CORRETO AQUI)
-app.MapHub<CallHub>("/hubs/call");
 
 app.Run();
