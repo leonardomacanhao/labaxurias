@@ -1,1 +1,13 @@
-<p>public-screen works!</p>
+<h1>📢 Tela Pública</h1>
+
+@if (!lastCall) {
+  <p>Aguardando chamadas...</p>
+}
+
+@if (lastCall) {
+  <h2>{{ lastCall.clientName }}</h2>
+
+  <p>
+    Guia: {{ lastCall.guideName }}
+  </p>
+}
