@@ -28,4 +28,8 @@ export class SignalrService {
 
   }
 
+  onAnyCall(callback: (data: any) => void) {
+  this.hubConnection?.on('ReceiveCall', callback);
+}
+
 }

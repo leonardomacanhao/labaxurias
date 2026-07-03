@@ -1,1 +1,31 @@
-<p>attendance works!</p>
+<h1>🧑‍💼 Atendimento</h1>
+
+<h3>Guia espiritual</h3>
+
+<ul>
+  <li *ngFor="let guide of guides">
+    <button (click)="selectGuide(guide.id)">
+      {{ guide.name }}
+    </button>
+  </li>
+</ul>
+
+<hr />
+
+@if (selectedGuideId) {
+
+  <h3>Fila</h3>
+
+  <button (click)="callNext()">
+    📢 Chamar próximo
+  </button>
+
+  <ul>
+    @for (item of queue; track item.id) {
+      <li>
+        {{ item.clientName }} - Ordem: {{ item.order }}
+      </li>
+    }
+  </ul>
+
+}
