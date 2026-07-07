@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
 import { ApiService } from '../../services/api.service';
 import { SignalrService } from '../../services/signalr';
+
+import { AttendanceCard } from './components/attendance-card/attendance-card';
 
 @Component({
   selector: 'app-attendance',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    AttendanceCard
   ],
   templateUrl: './attendance.html',
   styleUrl: './attendance.css',
@@ -17,64 +19,62 @@ import { SignalrService } from '../../services/signalr';
 export class Attendance implements OnInit {
 
   guides: any[] = [];
-  selectedGuideId: string | null = null;
-  queue: any[] = [];
 
-  //constructor(private api: ApiService) {}
   constructor(
-  private api: ApiService,
-  private signalr: SignalrService
-) {}
+    private api: ApiService,
+    private signalr: SignalrService
+  ) {}
 
- ngOnInit(): void {
-  this.loadGuides();
+  ngOnInit(): void {
 
-  this.signalr.startConnection();
+    this.loadGuides();
 
-this.signalr.onAnyCall(() => {
-  console.log('🔥 EVENTO RECEBIDO NO FRONT');
+    this.signalr.startConnection();
 
-  this.loadQueue();
-});
-}
+    this.signalr.onAnyCall(() => {
+
+      console.log('🔥 Atualizando filas');
+
+      this.loadGuides();
+
+    });
+
+  }
 
   loadGuides() {
-    this.api.getGuides().subscribe(data => {
-      this.guides = data;
+
+    this.api.getGuides().subscribe(guides => {
+
+      this.guides = guides;
+
+      this.guides.forEach((guide: any) => {
+
+        this.api.getQueueByGuide(guide.id).subscribe(queue => {
+
+          guide.queue = queue;
+
+        });
+
+      });
+
     });
+
   }
 
-  selectGuide(guideId: string) {
-    this.selectedGuideId = guideId;
-    this.loadQueue();
-  }
+  callNext(guideId: string) {
 
-  loadQueue() {
-    if (!this.selectedGuideId) return;
+    this.api.callNext(guideId).subscribe({
 
-    this.api.getQueueByGuide(this.selectedGuideId).subscribe(data => {
-      this.queue = data;
+      next: () => {
+
+        console.log("✅ Próximo chamado");
+
+      },
+
+      error: err => console.error(err)
+
     });
+
   }
 
-callNext(): void {
-
-  console.log("selectedGuideId =", this.selectedGuideId);
-
-  if (!this.selectedGuideId) {
-    alert("Selecione um guia.");
-    return;
-  }
-
-  this.api.callNext(this.selectedGuideId).subscribe({
-    next: () => {
-      console.log("✅ Próximo chamado");
-    },
-    error: (err) => {
-      console.error(err);
-    }
-  });
-
-}
-  
 }

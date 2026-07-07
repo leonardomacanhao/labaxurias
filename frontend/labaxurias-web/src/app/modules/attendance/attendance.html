@@ -1,39 +1,19 @@
 <h1>Painel de Atendimento</h1>
 
-<button (click)="callNext()">
-    Chamar Próximo
-</button>
+<div class="cards">
 
-<hr>
+    @for (guide of guides; track guide.id) {
 
-<label for="guide">
-    Guia Espiritual
-</label>
+        <app-attendance-card
 
-<select
-    id="guide"
-    [(ngModel)]="selectedGuideId">
+            [guideName]="guide.name"
 
-    <option [ngValue]="null">
-        Selecione...
-    </option>
+            [queue]="guide.queue ?? []"
 
-    <option
-        *ngFor="let guide of guides"
-        [ngValue]="guide.id">
+            (callNext)="callNext(guide.id)">
 
-        {{ guide.name }}
+        </app-attendance-card>
 
-    </option>
+    }
 
-</select>
-
-<hr>
-
-<h3>Fila</h3>
-
-<ul>
-  <li *ngFor="let item of queue">
-    {{ item.order }} - {{ item.clientName }}
-  </li>
-</ul> 
+</div>
