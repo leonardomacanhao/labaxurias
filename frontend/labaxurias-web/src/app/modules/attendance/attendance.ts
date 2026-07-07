@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
-import { SignalrService } from '../../services/signalr.service';
+import { SignalrService } from '../../services/signalr';
 
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './attendance.html',
   styleUrl: './attendance.css',
 })
@@ -53,11 +57,24 @@ this.signalr.onAnyCall(() => {
     });
   }
 
-  callNext() {
-    if (!this.selectedGuideId) return;
+callNext(): void {
 
-    this.api.callNext(this.selectedGuideId).subscribe(() => {
-      this.loadQueue();
-    });
+  console.log("selectedGuideId =", this.selectedGuideId);
+
+  if (!this.selectedGuideId) {
+    alert("Selecione um guia.");
+    return;
   }
+
+  this.api.callNext(this.selectedGuideId).subscribe({
+    next: () => {
+      console.log("✅ Próximo chamado");
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+
+}
+  
 }

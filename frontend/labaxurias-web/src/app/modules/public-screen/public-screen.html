@@ -1,13 +1,36 @@
-<h1>📢 Tela Pública</h1>
+<div class="screen">
 
-@if (!lastCall) {
-  <p>Aguardando chamadas...</p>
-}
+  <div class="header">
+    <h1>LABAXURIAS</h1>
+    <h2>✨ AGORA EM ATENDIMENTO ✨</h2>
+  </div>
 
-@if (lastCall) {
-  <h2>{{ lastCall.clientName }}</h2>
+  @if (!currentClient) {
 
-  <p>
-    Guia: {{ lastCall.guideName }}
-  </p>
-}
+    <div class="waiting">
+      <h3>Aguardando próxima chamada...</h3>
+    </div>
+
+  }
+
+  @if (currentClient) {
+
+    <div class="call-card">
+
+      <div class="client">
+        {{ currentClient }}
+      </div>
+
+      <div class="guide">
+        {{ currentGuide }}
+      </div>
+
+      <div class="time">
+        {{ calledAt }}
+      </div>
+
+    </div>
+
+  }
+
+</div>

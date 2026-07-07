@@ -1,5 +1,7 @@
+using Labaxurias.Api.Hubs;
 using Labaxurias.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Labaxurias.Api.Modules.Attendance.Controllers;
 
@@ -8,10 +10,14 @@ namespace Labaxurias.Api.Modules.Attendance.Controllers;
 public class CallController : ControllerBase
 {
     private readonly LabaxuriasDbContext _db;
+    private readonly IHubContext<CallHub> _hub;
 
-    public CallController(LabaxuriasDbContext db)
+    public CallController(
+        LabaxuriasDbContext db,
+        IHubContext<CallHub> hub)
     {
         _db = db;
+        _hub = hub;
     }
 
     [HttpPost("{guideId}")]
@@ -23,12 +29,22 @@ public class CallController : ControllerBase
             .FirstOrDefault();
 
         if (next == null)
+        {
             return NotFound(new { message = "Nenhum cliente na fila" });
+        }
 
         next.IsCalled = true;
         next.CalledAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
+
+        // Dispara evento para todos os clientes conectados
+        await _hub.Clients.All.SendAsync("ReceiveCall", new
+        {
+            clientName = next.ClientName,
+            guideId = next.SpiritualGuideId,
+            calledAt = next.CalledAt
+        });
 
         return Ok(new
         {

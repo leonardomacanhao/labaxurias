@@ -3,13 +3,16 @@ import { SignalrService } from '../../services/signalr';
 
 @Component({
   selector: 'app-public-screen',
+  standalone: true,
   imports: [],
   templateUrl: './public-screen.html',
   styleUrl: './public-screen.css',
 })
 export class PublicScreen implements OnInit {
 
-  lastCall: any = null;
+  currentClient = '';
+  currentGuide = '';
+  calledAt = '';
 
   constructor(private signalr: SignalrService) {}
 
@@ -21,7 +24,9 @@ export class PublicScreen implements OnInit {
 
       console.log('📢 Nova chamada:', data);
 
-      this.lastCall = data;
+      this.currentClient = data.clientName;
+      this.currentGuide = data.guideName;
+      this.calledAt = new Date().toLocaleTimeString();
 
     });
 

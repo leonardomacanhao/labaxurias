@@ -1,31 +1,39 @@
-<h1>🧑‍💼 Atendimento</h1>
+<h1>Painel de Atendimento</h1>
 
-<h3>Guia espiritual</h3>
+<button (click)="callNext()">
+    Chamar Próximo
+</button>
+
+<hr>
+
+<label for="guide">
+    Guia Espiritual
+</label>
+
+<select
+    id="guide"
+    [(ngModel)]="selectedGuideId">
+
+    <option [ngValue]="null">
+        Selecione...
+    </option>
+
+    <option
+        *ngFor="let guide of guides"
+        [ngValue]="guide.id">
+
+        {{ guide.name }}
+
+    </option>
+
+</select>
+
+<hr>
+
+<h3>Fila</h3>
 
 <ul>
-  <li *ngFor="let guide of guides">
-    <button (click)="selectGuide(guide.id)">
-      {{ guide.name }}
-    </button>
+  <li *ngFor="let item of queue">
+    {{ item.order }} - {{ item.clientName }}
   </li>
-</ul>
-
-<hr />
-
-@if (selectedGuideId) {
-
-  <h3>Fila</h3>
-
-  <button (click)="callNext()">
-    📢 Chamar próximo
-  </button>
-
-  <ul>
-    @for (item of queue; track item.id) {
-      <li>
-        {{ item.clientName }} - Ordem: {{ item.order }}
-      </li>
-    }
-  </ul>
-
-}
+</ul> 

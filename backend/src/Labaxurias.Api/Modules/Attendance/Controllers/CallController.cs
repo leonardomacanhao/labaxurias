@@ -2,6 +2,7 @@ using Labaxurias.Api.Hubs;
 using Labaxurias.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Labaxurias.Api.Modules.Attendance.Controllers;
 
@@ -23,10 +24,11 @@ public class CallController : ControllerBase
     [HttpPost("{guideId}")]
     public async Task<IActionResult> CallNext(Guid guideId)
     {
-        var next = _db.QueueItems
+        var next = await _db.QueueItems
+            .Include(q => q.SpiritualGuide)
             .Where(q => q.SpiritualGuideId == guideId && !q.IsCalled)
             .OrderBy(q => q.CreatedAt)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
         if (next == null)
         {
@@ -42,6 +44,7 @@ public class CallController : ControllerBase
         {
             clientName = next.ClientName,
             guideId = next.SpiritualGuideId,
+            guideName = next.SpiritualGuide?.Name,
             calledAt = next.CalledAt
         };
 
