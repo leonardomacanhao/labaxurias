@@ -1,9 +1,10 @@
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #000;
+    color: #fff;
 }
 
 :host {
@@ -15,81 +16,49 @@ body {
 .screen {
     width: 100%;
     height: 100%;
-    background: #0f172a;
-    color: white;
-
+    background: #000;
+    color: #fff;
     display: flex;
     flex-direction: column;
+}
+
+.waiting-screen {
+    flex: 1;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.header {
+.logo-container {
     text-align: center;
-    margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    animation: fadeInSlow 2s ease-in;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 56px;
-    letter-spacing: 6px;
+.logo-image {
+    width: 800px;
+    height: auto;
+    max-width: 90vw;
 }
 
-.header h2 {
-    margin-top: 20px;
-    color: #38bdf8;
-    font-size: 32px;
+.logo-text {
+    font-size: 52px;
+    font-weight: 300;
+    letter-spacing: 10px;
+    text-transform: uppercase;
+    opacity: 0.9;
 }
 
-.call-card {
-
-    width: 80%;
-    max-width: 1000px;
-
-    background: #1e293b;
-
-    border-radius: 20px;
-
-    padding: 50px;
-
-    text-align: center;
-
-    box-shadow: 0 0 40px rgba(0,0,0,.35);
-
-}
-
-.client {
-
-    font-size: 72px;
-
-    font-weight: bold;
-
-    margin-bottom: 30px;
-
-}
-
-.guide {
-
-    font-size: 34px;
-
-    color: #cbd5e1;
-
-}
-
-.time {
-
-    margin-top: 40px;
-
-    font-size: 22px;
-
-    color: #94a3b8;
-
-}
-
-.waiting {
-
-    font-size: 40px;
-
-    color: #94a3b8;
-
+@keyframes fadeInSlow {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

@@ -1,36 +1,17 @@
 <div class="screen">
+  <app-header-info></app-header-info>
 
-  <div class="header">
-    <h1>LABAXURIAS</h1>
-    <h2>✨ AGORA EM ATENDIMENTO ✨</h2>
-  </div>
-
-  @if (!currentClient) {
-
-    <div class="waiting">
-      <h3>Aguardando próxima chamada...</h3>
+  @if (currentAttendance) {
+    <app-attendance-panel
+      [currentAttendance]="currentAttendance"
+      [nextInQueue]="nextInQueue">
+    </app-attendance-panel>
+  } @else {
+    <div class="waiting-screen">
+      <div class="logo-container">
+        <img src="logo-tucucj.png" alt="T.U.C.U.C.J." class="logo-image">
+        <div class="logo-text">T.U.C.U.C.J.</div>
+      </div>
     </div>
-
   }
-
-  @if (currentClient) {
-
-    <div class="call-card">
-
-      <div class="client">
-        {{ currentClient }}
-      </div>
-
-      <div class="guide">
-        {{ currentGuide }}
-      </div>
-
-      <div class="time">
-        {{ calledAt }}
-      </div>
-
-    </div>
-
-  }
-
 </div>

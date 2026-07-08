@@ -2,48 +2,72 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { Guide } from '../models/guide';
+import { Medium } from '../models/medium';
+import { QueueItem } from '../models/queue-item';
+import { Call } from '../models/call';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  private baseUrl = 'http://localhost:5291/api';
+  private readonly baseUrl = 'http://localhost:5291/api';
 
   constructor(private http: HttpClient) {}
 
-  // ===== MEDIUMS =====
+  // Mediums
 
-  createMedium(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/catalog/mediums`, data);
+  createMedium(data: Partial<Medium>): Observable<Medium> {
+    return this.http.post<Medium>(
+      `${this.baseUrl}/catalog/mediums`,
+      data
+    );
   }
 
-  getMediums(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/catalog/mediums`);
+  getMediums(): Observable<Medium[]> {
+    return this.http.get<Medium[]>(
+      `${this.baseUrl}/catalog/mediums`
+    );
   }
 
-  // ===== GUIDES =====
+  // Guides
 
-  createGuide(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/catalog/guides`, data);
+  createGuide(data: Partial<Guide>): Observable<Guide> {
+    return this.http.post<Guide>(
+      `${this.baseUrl}/catalog/guides`,
+      data
+    );
   }
 
-  getGuides(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/catalog/guides`);
+  getGuides(): Observable<Guide[]> {
+    return this.http.get<Guide[]>(
+      `${this.baseUrl}/catalog/guides`
+    );
   }
 
-  // ===== QUEUE =====
+  // Queue
 
-  createQueueItem(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/attendance/queue`, data);
+  createQueueItem(data: Partial<QueueItem>): Observable<QueueItem> {
+    return this.http.post<QueueItem>(
+      `${this.baseUrl}/attendance/queue`,
+      data
+    );
   }
 
-  getQueueByGuide(guideId: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/attendance/queue/guide/${guideId}`);
+  getQueueByGuide(guideId: string): Observable<QueueItem[]> {
+    return this.http.get<QueueItem[]>(
+      `${this.baseUrl}/attendance/queue/guide/${guideId}`
+    );
   }
 
-  // ===== CALL =====
+  // Calls
 
-  callNext(guideId: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/attendance/call/${guideId}`, {});
+  callNext(guideId: string): Observable<Call> {
+    return this.http.post<Call>(
+      `${this.baseUrl}/attendance/call/${guideId}`,
+      {}
+    );
   }
+
 }

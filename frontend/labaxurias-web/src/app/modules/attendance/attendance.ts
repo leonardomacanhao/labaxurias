@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ApiService } from '../../services/api.service';
 import { SignalrService } from '../../services/signalr';
 
 import { AttendanceCard } from './components/attendance-card/attendance-card';
+
+import { Guide } from '../../models/guide';
 
 @Component({
   selector: 'app-attendance',
@@ -18,11 +20,16 @@ import { AttendanceCard } from './components/attendance-card/attendance-card';
 })
 export class Attendance implements OnInit {
 
-  guides: any[] = [];
+  guides: Guide[] = [];
+
+  trackByGuideId(index: number, guide: Guide): string {
+    return guide.id;
+  }
 
   constructor(
     private api: ApiService,
-    private signalr: SignalrService
+    private signalr: SignalrService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,25 +48,31 @@ export class Attendance implements OnInit {
 
   }
 
-  loadGuides() {
+ loadGuides() {
 
-    this.api.getGuides().subscribe(guides => {
+  this.api.getGuides().subscribe(guides => {
 
-      this.guides = guides;
+    console.log("GUIAS:", guides);
 
-      this.guides.forEach((guide: any) => {
+    this.guides = guides;
 
-        this.api.getQueueByGuide(guide.id).subscribe(queue => {
+    this.cdr.detectChanges();
 
-          guide.queue = queue;
+    this.guides.forEach((guide: any) => {
 
-        });
+      this.api.getQueueByGuide(guide.id).subscribe(queue => {
+
+        guide.queue = queue;
+
+        this.cdr.detectChanges();
 
       });
 
     });
 
-  }
+  });
+
+}
 
   callNext(guideId: string) {
 

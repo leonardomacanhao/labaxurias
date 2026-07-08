@@ -1,10 +1,22 @@
+.title{
+
+    text-align:center;
+
+    margin:30px 0;
+
+    font-size:34px;
+
+}
+
 .cards{
 
     display:flex;
 
     flex-wrap:wrap;
 
-    gap:20px;
+    gap:25px;
+
+    justify-content:center;
 
     padding:20px;
 

@@ -1,0 +1,15 @@
+<div class="attendance-panel">
+  <div class="center-content">
+    <div class="consultant-name" [class.blinking]="isBlinking">
+      {{ currentAttendance?.name }}
+    </div>
+    <div class="entity-name">{{ currentAttendance?.entityName }}</div>
+  </div>
+
+  @if (nextInQueue) {
+    <div class="next-section">
+      <div class="next-label">PRÓXIMO</div>
+      <div class="next-name">{{ nextInQueue.name }}</div>
+    </div>
+  }
+</div>

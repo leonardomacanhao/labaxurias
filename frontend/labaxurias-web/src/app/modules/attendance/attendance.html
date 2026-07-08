@@ -1,19 +1,16 @@
-<h1>Painel de Atendimento</h1>
+<h1 class="title">
+
+    Painel de Atendimento
+
+</h1>
 
 <div class="cards">
 
-    @for (guide of guides; track guide.id) {
-
-        <app-attendance-card
-
-            [guideName]="guide.name"
-
-            [queue]="guide.queue ?? []"
-
-            (callNext)="callNext(guide.id)">
-
-        </app-attendance-card>
-
-    }
+    <app-attendance-card
+        *ngFor="let guide of guides; trackBy: trackByGuideId"
+        [guideName]="guide.name"
+        [queue]="guide.queue || []"
+        (callNext)="callNext(guide.id)">
+    </app-attendance-card>
 
 </div>
