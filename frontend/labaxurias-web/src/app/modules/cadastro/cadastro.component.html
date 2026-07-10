@@ -1,0 +1,167 @@
+<app-page-header title="Cadastros">
+  <div class="header-actions">
+    <p class="subtitle">Gerenciamento de Médiuns e Entidades</p>
+  </div>
+</app-page-header>
+
+<div class="tabs">
+  <button [class.active]="activeTab === 'medium'" (click)="setTab('medium')">Médiuns</button>
+  <button [class.active]="activeTab === 'entidade'" (click)="setTab('entidade')">Entidades</button>
+</div>
+
+<div class="tab-content">
+  
+  <!-- ABA MÉDIUNS -->
+  @if (activeTab === 'medium') {
+    <div class="medium-layout">
+      <div class="form-section">
+        <h2>Novo Médium</h2>
+        <div class="form-group">
+          <label>Nome</label>
+          <input type="text" [(ngModel)]="newMedium.name" placeholder="Nome do médium">
+        </div>
+        <div class="form-actions">
+          <button class="btn-save" (click)="saveMedium()">Salvar</button>
+        </div>
+      </div>
+
+      <div class="list-section">
+        <h2>Médiuns Cadastrados ({{ mediums.length }})</h2>
+        <div class="list-container">
+          @for (medium of mediums; track medium.id) {
+            <div class="card">
+              <div class="card-info">
+                <strong>{{ medium.name }}</strong>
+              </div>
+              <div class="card-actions">
+                <button class="icon-btn" (click)="openEditMediumModal(medium)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="icon-btn delete" (click)="deleteMedium(medium.id)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-list">Nenhum médium cadastrado.</div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ABA ENTIDADES -->
+  @if (activeTab === 'entidade') {
+    <div class="entity-layout">
+      <div class="medium-selector-bar">
+        <label>Gerenciar entidades de:</label>
+        <select [(ngModel)]="selectedMediumId" (change)="onMediumSelect()">
+          <option [ngValue]="null">-- Selecione um médium --</option>
+          @for (m of mediums; track m.id) {
+            <option [ngValue]="m.id">{{ m.name }}</option>
+          }
+        </select>
+      </div>
+
+      @if (selectedMediumId) {
+        <div class="medium-layout">
+          <div class="form-section">
+            <h2>Nova Entidade</h2>
+            <div class="form-group">
+              <label>Nome da Entidade</label>
+              <input type="text" [(ngModel)]="newEntity.name" placeholder="Ex: Pai Joaquim, Exu Tranca Ruas">
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" (click)="saveEntity()">Salvar</button>
+            </div>
+          </div>
+
+          <div class="list-section">
+            <h2>Entidades deste Médium ({{ entities.length }})</h2>
+            <div class="list-container">
+              @for (entity of entities; track entity.id) {
+                <div class="card">
+                  <div class="card-info">
+                    <strong>{{ entity.name }}</strong>
+                  </div>
+                  <div class="card-actions">
+                    <button class="icon-btn" (click)="openEditEntityModal(entity)" title="Editar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button class="icon-btn delete" (click)="deleteEntity(entity.id)" title="Excluir">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              } @empty {
+                <div class="empty-list">Nenhuma entidade cadastrada para este médium.</div>
+              }
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="placeholder-box">
+          <h2>Selecione um Médium</h2>
+          <p>Escolha um médium no menu acima para visualizar e cadastrar suas entidades.</p>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
+<!-- Modal de Edição de Médium -->
+@if (showEditMediumModal) {
+  <div class="modal-overlay" (click)="closeEditMediumModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Editar Médium</h2>
+        <button class="modal-close" (click)="closeEditMediumModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome</label>
+          <input type="text" [(ngModel)]="editingMedium.name" placeholder="Nome do médium">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeEditMediumModal()">Cancelar</button>
+        <button class="btn-save" (click)="saveEditMedium()">Salvar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Edição de Entidade -->
+@if (showEditEntityModal) {
+  <div class="modal-overlay" (click)="closeEditEntityModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Editar Entidade</h2>
+        <button class="modal-close" (click)="closeEditEntityModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nome da Entidade</label>
+          <input type="text" [(ngModel)]="editingEntity.name" placeholder="Nome da entidade">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeEditEntityModal()">Cancelar</button>
+        <button class="btn-save" (click)="saveEditEntity()">Salvar</button>
+      </div>
+    </div>
+  </div>
+}

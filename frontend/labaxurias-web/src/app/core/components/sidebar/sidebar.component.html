@@ -1,0 +1,65 @@
+<nav class="sidebar">
+  <div class="logo-area">
+    <div class="logo-icon">🔱</div>
+    <div class="logo-text">
+      <h2>T.U.C.U.C.J.</h2>
+      <span class="subtitle">Painel de Controle</span>
+    </div>
+  </div>
+
+  <ul class="menu-list">
+    <li>
+      <a routerLink="/gira" routerLinkActive="active" class="menu-item">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2C12 2 8 6 8 12C8 16 10 20 12 22C14 20 16 16 16 12C16 6 12 2 12 2Z"/>
+            <path d="M12 12C12 12 10 14 10 16C10 18 12 20 12 20C12 20 14 18 14 16C14 14 12 12 12 12Z"/>
+          </svg>
+        </span>
+        <span class="label">Gira</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/atendimentos" routerLinkActive="active" class="menu-item">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V7C19 5.89543 18.1046 5 17 5H15"/>
+            <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5"/>
+            <path d="M9 12H15"/>
+            <path d="M9 16H15"/>
+          </svg>
+        </span>
+        <span class="label">Atendimentos</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/cadastros" routerLinkActive="active" class="menu-item">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M3 5V19C3 20.6569 7.02944 22 12 22C16.9706 22 21 20.6569 21 19V5"/>
+            <path d="M3 12C3 13.6569 7.02944 15 12 15C16.9706 15 21 13.6569 21 12"/>
+          </svg>
+        </span>
+        <span class="label">Cadastros</span>
+      </a>
+    </li>
+    <li>
+      <a (click)="openExternal('/public')" class="menu-item external-link">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+            <polyline points="17 2 12 7 7 2"/>
+          </svg>
+        </span>
+        <span class="label">Painel de Chamada</span>
+        <span class="external-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17L17 7"/>
+            <path d="M7 7H17V17"/>
+          </svg>
+        </span>
+      </a>
+    </li>
+  </ul>
+</nav>

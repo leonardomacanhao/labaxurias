@@ -1,0 +1,295 @@
+<app-page-header title="Atendimentos">
+  <div class="header-actions">
+    <button class="btn-add-entity" (click)="openMediumModal()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <line x1="19" y1="8" x2="19" y2="14"/>
+        <line x1="22" y1="11" x2="16" y2="11"/>
+      </svg>
+      Adicionar entidade
+    </button>
+    <div class="date-picker-wrapper">
+      <label>Data da Gira:</label>
+      <div class="date-display" (click)="openCalendar()">
+        <span class="formatted-date">{{ selectedDate | date:'dd/MM/yyyy' }}</span>
+        <span class="calendar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        <input #dateInput type="date" [(ngModel)]="selectedDate" (input)="onDateChange()" (keydown)="$event.preventDefault()" class="date-input-hidden">
+      </div>
+    </div>
+  </div>
+</app-page-header>
+
+<div class="content-area">
+  @if (selectedEntities.length === 0) {
+    <div class="placeholder-message"><p>Nenhuma entidade selecionada para esta gira.</p><p class="sub-text">Clique em "Adicionar entidade" para começar.</p></div>
+  } @else {
+    <div class="entities-grid">
+      @for (entity of selectedEntities; track entity.entityId) {
+        <div class="entity-card" (click)="onEntityCardClick(entity)">
+          <button class="entity-card-remove" (click)="removeEntity(entity, $event)" title="Remover entidade">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="entity-card-content">
+            <h3 class="entity-card-name">{{ entity.entityName }}</h3>
+            <p class="entity-card-medium">{{ entity.mediumName }}</p>
+          </div>
+          <div class="entity-card-indicator"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modal Fila de Atendimento -->
+@if (activeEntity) {
+  <div class="modal-overlay" (click)="closeEntityQueueModal()">
+    <div class="modal-content queue-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Fila: {{ activeEntity.entityName }}</h2>
+          <span class="medium-label">{{ activeEntity.mediumName }}</span>
+        </div>
+        <div class="modal-header-actions">
+          <button class="btn-transfer" (click)="openTransferModal()" title="Transferir todos os consulentes">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+            Transferir Todos
+          </button>
+          <button class="modal-close" (click)="closeEntityQueueModal()">×</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="add-consulente">
+          <input type="text" [(ngModel)]="newConsulenteName" placeholder="Nome do consulente..." (keydown.enter)="addConsulente()">
+          <button class="btn-primary" (click)="addConsulente()">Adicionar</button>
+        </div>
+        
+        <div class="queue-list-header">
+          <span>Consulentes na fila</span>
+          <span class="count-badge">{{ currentQueue.length }}</span>
+        </div>
+
+        <div class="queue-list" cdkDropList (cdkDropListDropped)="dropQueue($event)" [cdkDropListData]="currentQueue">
+          @for (item of currentQueue; track item.id; let i = $index) {
+            <div class="queue-item" cdkDrag>
+              <div class="drag-handle" cdkDragHandle>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a2 2 0 11-4 0 2 2 0 014 0zm0 6a2 2 0 11-4 0 2 2 0 014 0zm0 6a2 2 0 11-4 0 2 2 0 014 0zm12-12a2 2 0 11-4 0 2 2 0 014 0zm0 6a2 2 0 11-4 0 2 2 0 014 0zm0 6a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+              <span class="item-number">{{ i + 1 }}</span>
+              
+              @if (editingQueueItemId === item.id) {
+                <input #editInput type="text" class="edit-input" [(ngModel)]="editingQueueItemName" (keydown.enter)="saveEditQueueItem()" (keydown.escape)="cancelEditQueueItem()">
+              } @else {
+                <span class="item-name">{{ item.name }}</span>
+              }
+
+              <div class="item-actions">
+                @if (editingQueueItemId !== item.id) {
+                  <button class="icon-btn" (click)="startEditQueueItem(item)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <button class="icon-btn" (click)="openTransferItemModal(item)" title="Transferir consulente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </button>
+                  <button class="icon-btn delete" (click)="confirmDeleteQueueItem(item)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                  </button>
+                } @else {
+                  <button class="icon-btn save" (click)="saveEditQueueItem()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  </button>
+                  <button class="icon-btn cancel" (click)="cancelEditQueueItem()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                }
+              </div>
+              <div *cdkDragPlaceholder></div>
+            </div>
+          } @empty {
+            <div class="empty-queue">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              <p>Fila vazia</p>
+              <span>Adicione consulentes acima</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Confirmação de Exclusão -->
+@if (showDeleteConfirmModal && itemToDelete) {
+  <div class="modal-overlay" (click)="cancelDeleteQueueItem()">
+    <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmar Exclusão</h2>
+        <button class="modal-close" (click)="cancelDeleteQueueItem()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">Tem certeza que deseja excluir o consulente <strong>"{{ itemToDelete.name }}"</strong> da fila?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cancelDeleteQueueItem()">Cancelar</button>
+        <button class="btn-danger" (click)="executeDeleteQueueItem()">Excluir</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal para Remover Entidade com Consulentes -->
+@if (showRemoveEntityModal && entityToRemove) {
+  <div class="modal-overlay" (click)="cancelRemoveEntity()">
+    <div class="modal-content remove-entity-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Remover Entidade</h2>
+        <button class="modal-close" (click)="cancelRemoveEntity()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="remove-warning">
+          A entidade <strong>"{{ entityToRemove.entityName }}"</strong> possui <strong>{{ (entityQueues[entityToRemove.entityId] || []).length }} consulente(s)</strong> na fila.
+        </p>
+        <p class="remove-instruction">O que você deseja fazer com esses consulentes?</p>
+        
+        <div class="remove-options">
+          <div class="remove-option" [class.selected]="removeEntityAction === 'transfer'" (click)="removeEntityAction = 'transfer'">
+            <div class="remove-option-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+            </div>
+            <div class="remove-option-content">
+              <strong>Transferir para outra entidade</strong>
+              <span>Mover todos os consulentes para outra entidade da sessão</span>
+            </div>
+          </div>
+          
+          <div class="remove-option" [class.selected]="removeEntityAction === 'delete'" (click)="removeEntityAction = 'delete'">
+            <div class="remove-option-icon danger">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </div>
+            <div class="remove-option-content">
+              <strong>Excluir todos os consulentes</strong>
+              <span>Remover a entidade e todos os seus consulentes permanentemente</span>
+            </div>
+          </div>
+        </div>
+        
+        @if (removeEntityAction === 'transfer') {
+          <div class="transfer-select">
+            <label>Selecione a entidade de destino:</label>
+            <div class="entity-select-list">
+              @for (entity of selectedEntities; track entity.entityId) {
+                @if (entity.entityId !== entityToRemove.entityId) {
+                  <div class="entity-select-item" [class.selected]="transferTargetEntityId === entity.entityId" (click)="transferTargetEntityId = entity.entityId">
+                    <div class="entity-select-info">
+                      <strong>{{ entity.entityName }}</strong>
+                      <span>{{ entity.mediumName }}</span>
+                    </div>
+                    <div class="entity-select-badge">
+                      {{ (entityQueues[entity.entityId] || []).length }} consulentes
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cancelRemoveEntity()">Cancelar</button>
+        @if (removeEntityAction === 'transfer') {
+          <button class="btn-primary" (click)="confirmRemoveWithTransfer()" [disabled]="!transferTargetEntityId">Transferir e Remover</button>
+        } @else if (removeEntityAction === 'delete') {
+          <button class="btn-danger" (click)="confirmRemoveWithDelete()">Excluir Tudo</button>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Transferência -->
+@if (showTransferModal) {
+  <div class="modal-overlay" (click)="closeTransferModal()">
+    <div class="modal-content transfer-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          @if (transferItem) {
+            Transferir Consulente
+          } @else {
+            Transferir Todos os Consulentes
+          }
+        </h2>
+        <button class="modal-close" (click)="closeTransferModal()">×</button>
+      </div>
+      <div class="modal-body">
+        @if (transferItem) {
+          <p class="transfer-instruction">Transferir <strong>"{{ transferItem.name }}"</strong> para:</p>
+        } @else {
+          <p class="transfer-instruction">Selecione a entidade de destino para transferir todos os consulentes:</p>
+        }
+        <div class="entity-select-list">
+          @for (entity of selectedEntities; track entity.entityId) {
+            @if (entity.entityId !== activeEntity?.entityId) {
+              <div class="entity-select-item" [class.selected]="transferTargetEntityId === entity.entityId" (click)="transferTargetEntityId = entity.entityId">
+                <div class="entity-select-info">
+                  <strong>{{ entity.entityName }}</strong>
+                  <span>{{ entity.mediumName }}</span>
+                </div>
+                <div class="entity-select-badge">
+                  {{ (entityQueues[entity.entityId] || []).length }} consulentes
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeTransferModal()">Cancelar</button>
+        <button class="btn-primary" (click)="transferAttendance()" [disabled]="!transferTargetEntityId">Transferir</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal 1: Seleção de Médiuns -->
+@if (showMediumModal) {
+  <div class="modal-overlay" (click)="closeMediumModal()"><div class="modal-content medium-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h2>Selecione os Médiuns</h2><button class="modal-close" (click)="closeMediumModal()">×</button></div>
+    <div class="modal-body"><div class="medium-list">
+      @for (medium of mediums; track medium.id) {
+        <div class="medium-item" [class.selected]="selectedMediumIds.has(medium.id)" (click)="toggleMedium(medium.id)">
+          <div class="checkbox" [class.checked]="selectedMediumIds.has(medium.id)">@if(selectedMediumIds.has(medium.id)){<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>}</div>
+          <span class="medium-name">{{ medium.name }}</span>
+        </div>
+      } @empty { <div class="empty-list">Nenhum médium cadastrado.</div> }
+    </div></div>
+    <div class="modal-footer"><button class="btn-secondary" (click)="closeMediumModal()">Cancelar</button><button class="btn-primary" (click)="confirmMediumSelection()">Confirmar</button></div>
+  </div></div>
+}
+
+<!-- Modal 2: Seleção de Entidades -->
+@if (showEntityModal) {
+  <div class="modal-overlay" (click)="closeEntityModal()"><div class="modal-content entity-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header"><h2>Adicionar Entidades</h2><button class="modal-close" (click)="closeEntityModal()">×</button></div>
+    <div class="modal-body">
+      <p class="modal-instruction">Selecione as entidades que deseja adicionar à gira:</p>
+      <div class="entities-container">
+        @for (item of mediumsWithEntities; track item.medium.id) {
+          <div class="medium-box">
+            <h3 class="medium-box-title">{{ item.medium.name }}</h3>
+            <div class="entity-list">
+              @for (entity of item.entities; track entity.id) {
+                <div class="entity-item" [class.selected]="selectedEntityIds.has(entity.id)" (click)="toggleEntity(entity.id)">
+                  <div class="checkbox" [class.checked]="selectedEntityIds.has(entity.id)">@if(selectedEntityIds.has(entity.id)){<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>}</div>
+                  <span class="entity-name">{{ entity.name }}</span>
+                </div>
+              } @empty { <div class="empty-entities">Nenhuma entidade disponível deste médium.</div> }
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-list">Nenhuma entidade disponível para adicionar.</div>
+        }
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-secondary" (click)="closeEntityModal()">Cancelar</button><button class="btn-primary" (click)="confirmEntitySelection()">Adicionar</button></div>
+  </div></div>
+}

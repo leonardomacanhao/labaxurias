@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Labaxurias.Infrastructure.Migrations
 {
     [DbContext(typeof(LabaxuriasDbContext))]
-    [Migration("20260703150833_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260710000315_InitialSessionStructure")]
+    partial class InitialSessionStructure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,14 +57,66 @@ namespace Labaxurias.Infrastructure.Migrations
                     b.Property<bool>("IsCalled")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("SessionEntityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("SpiritualGuideId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SessionEntityId");
+
+                    b.HasIndex("SpiritualGuideId");
+
+                    b.ToTable("QueueItems");
+                });
+
+            modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.Session", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sessions");
+                });
+
+            modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.SessionEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("SpiritualGuideId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SessionId");
+
                     b.HasIndex("SpiritualGuideId");
 
-                    b.ToTable("QueueItems");
+                    b.ToTable("SessionEntities");
                 });
 
             modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.SpiritualGuide", b =>
@@ -92,11 +144,36 @@ namespace Labaxurias.Infrastructure.Migrations
 
             modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.QueueItem", b =>
                 {
+                    b.HasOne("Labaxurias.Infrastructure.Domain.Entities.SessionEntity", "SessionEntity")
+                        .WithMany("QueueItems")
+                        .HasForeignKey("SessionEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Labaxurias.Infrastructure.Domain.Entities.SpiritualGuide", "SpiritualGuide")
+                        .WithMany()
+                        .HasForeignKey("SpiritualGuideId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("SessionEntity");
+
+                    b.Navigation("SpiritualGuide");
+                });
+
+            modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.SessionEntity", b =>
+                {
+                    b.HasOne("Labaxurias.Infrastructure.Domain.Entities.Session", "Session")
+                        .WithMany("SessionEntities")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Labaxurias.Infrastructure.Domain.Entities.SpiritualGuide", "SpiritualGuide")
                         .WithMany()
                         .HasForeignKey("SpiritualGuideId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Session");
 
                     b.Navigation("SpiritualGuide");
                 });
@@ -110,6 +187,16 @@ namespace Labaxurias.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Medium");
+                });
+
+            modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.Session", b =>
+                {
+                    b.Navigation("SessionEntities");
+                });
+
+            modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.SessionEntity", b =>
+                {
+                    b.Navigation("QueueItems");
                 });
 #pragma warning restore 612, 618
         }

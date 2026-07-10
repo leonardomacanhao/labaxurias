@@ -1,0 +1,218 @@
+/* Header e Grid */
+.header-actions { display: flex; align-items: center; gap: 1.5rem; }
+
+/* NOVO: Botão "Adicionar entidade" com cor padrão (vermelho) */
+.btn-add-entity {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #ff3333;
+  color: #fff;
+  border: 1px solid #ff3333;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-add-entity:hover {
+  background: #cc0000;
+  border-color: #cc0000;
+}
+
+.content-area { flex: 1; background: #0a0a0a; border-radius: 8px; border: 1px solid #222; padding: 2rem; overflow-y: auto; }
+.placeholder-message { text-align: center; opacity: 0.6; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; min-height: 300px; }
+.placeholder-message p { margin: 0.5rem 0; font-size: 1.2rem; }
+.placeholder-message .sub-text { font-size: 0.95rem !important; opacity: 0.7; }
+.entities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+
+/* Entity Card */
+.entity-card { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1.5rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+.entity-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #ff3333; opacity: 0; transition: 0.2s; }
+.entity-card:hover { background: #1a1a1a; border-color: #ff3333; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 51, 51, 0.15); }
+.entity-card:hover::before { opacity: 1; }
+.entity-card-content { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.entity-card-name { margin: 0; font-size: 1.5rem; font-weight: 700; color: #fff; }
+.entity-card-medium { margin: 0; font-size: 0.9rem; color: #888; font-style: italic; }
+.entity-card-indicator { color: #ff3333; opacity: 0.5; transition: 0.2s; }
+.entity-card:hover .entity-card-indicator { opacity: 1; transform: translateX(3px); }
+
+.entity-card-remove { position: absolute; top: 0.5rem; left: 0.5rem; background: rgba(255, 51, 51, 0.1); border: 1px solid rgba(255, 51, 51, 0.3); color: #ff3333; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; opacity: 0; z-index: 10; }
+.entity-card:hover .entity-card-remove { opacity: 1; }
+.entity-card-remove:hover { background: #ff3333; color: #fff; transform: scale(1.1); }
+
+/* Date Picker */
+.date-picker-wrapper { display: flex; align-items: center; gap: 1rem; background: #111; padding: 0.8rem 1.5rem; border-radius: 8px; border: 1px solid #333; }
+.date-picker-wrapper label { font-size: 0.9rem; opacity: 0.8; font-weight: 600; letter-spacing: 1px; color: #aaa; }
+.date-display { position: relative; display: flex; align-items: center; background: #000; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+.date-display:hover { border-color: #ff3333; }
+.formatted-date { font-size: 1rem; font-weight: 700; color: #fff; padding: 0.5rem 1rem; min-width: 100px; text-align: center; cursor: pointer; }
+.calendar-icon { display: flex; align-items: center; justify-content: center; padding: 0 0.8rem; background: rgba(255, 51, 51, 0.1); border-left: 1px solid #333; color: #ff3333; cursor: pointer; height: 100%; }
+.date-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+/* Botões */
+.btn-primary, .btn-secondary, .btn-danger { padding: 0.8rem 1.8rem; border-radius: 6px; font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+.btn-primary { background: #ff3333; color: #fff; }
+.btn-primary:hover { background: #cc0000; }
+.btn-primary:disabled { background: #444; cursor: not-allowed; opacity: 0.5; }
+.btn-secondary { background: #1a1a1a; color: #fff; border-color: #333; }
+.btn-secondary:hover { background: #2a2a2a; }
+.btn-danger { background: #cc0000; color: #fff; }
+.btn-danger:hover { background: #990000; }
+
+.btn-transfer { display: flex; align-items: center; gap: 0.5rem; background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 0.6rem 1.2rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+.btn-transfer:hover { background: #2a2a2a; color: #fff; border-color: #ff3333; }
+
+/* Modais */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: #111; border: 1px solid #333; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); max-height: 85vh; display: flex; flex-direction: column; }
+.medium-modal { width: 500px; max-width: 90vw; }
+.entity-modal { width: 800px; max-width: 95vw; }
+.queue-modal { width: 700px; max-width: 90vw; }
+.confirm-modal { width: 450px; max-width: 90vw; }
+.transfer-modal { width: 600px; max-width: 90vw; }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #222; }
+.modal-header h2 { margin: 0; font-size: 1.5rem; color: #ff3333; font-weight: 700; letter-spacing: 1px; }
+.modal-header-actions { display: flex; align-items: center; gap: 1rem; }
+.medium-label { display: block; margin-top: 4px; font-size: 0.85rem; color: #888; }
+.modal-close { background: transparent; border: none; color: #aaa; font-size: 2rem; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { color: #ff3333; }
+.modal-body { padding: 2rem; overflow-y: auto; flex: 1; }
+.modal-footer { display: flex; gap: 1rem; justify-content: flex-end; padding: 1.5rem 2rem; border-top: 1px solid #222; }
+.modal-instruction { margin: 0 0 1.5rem 0; color: #aaa; font-size: 0.95rem; }
+
+/* Fila de Atendimento */
+.add-consulente { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; }
+.add-consulente input { flex: 1; background: #0a0a0a; border: 1px solid #333; color: #fff; padding: 0.9rem; border-radius: 6px; font-size: 1rem; outline: none; }
+.add-consulente input:focus { border-color: #ff3333; box-shadow: 0 0 0 2px rgba(255, 51, 51, 0.2); }
+
+.queue-list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; color: #aaa; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+.count-badge { background: #1a1a1a; border: 1px solid #333; padding: 0.2rem 0.8rem; border-radius: 20px; color: #ff3333; font-weight: 600; }
+
+.queue-list { display: flex; flex-direction: column; gap: 0.8rem; min-height: 50px; }
+
+.cdk-drag-placeholder { 
+  opacity: 0.8; 
+  background: rgba(255, 51, 51, 0.1); 
+  border: 2px dashed #ff3333; 
+  border-radius: 8px;
+  min-height: 60px;
+  margin: 0.4rem 0;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-preview {
+  background: #1a1a1a;
+  border: 2px solid #ff3333;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 51, 51, 0.3);
+  transform: scale(1.05);
+  z-index: 1000;
+}
+
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #0f0f0f;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.queue-item:hover { background: #161616; border-color: #333; }
+
+.cdk-drop-list-dragging .queue-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drag-handle { cursor: grab; color: #555; transition: 0.2s; padding: 0.4rem; }
+.drag-handle:hover { color: #ff3333; }
+.drag-handle:active { cursor: grabbing; }
+.drag-handle svg { width: 16px; height: 16px; }
+
+.item-number { background: #222; color: #aaa; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+.item-name { flex: 1; font-size: 1rem; color: #eee; }
+.edit-input { flex: 1; background: #000; border: 1px solid #ff3333; color: #fff; padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 1rem; outline: none; }
+
+.item-actions { display: flex; gap: 0.5rem; }
+.icon-btn { background: transparent; border: none; color: #666; cursor: pointer; padding: 0.5rem; border-radius: 4px; transition: 0.2s; display: flex; }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn:hover { background: #222; color: #fff; }
+.icon-btn.delete:hover { background: rgba(255, 50, 50, 0.15); color: #ff5555; }
+.icon-btn.save:hover { background: rgba(50, 255, 100, 0.15); color: #55ff88; }
+.icon-btn.cancel:hover { background: #222; color: #aaa; }
+
+
+.empty-queue { text-align: center; padding: 3rem 1rem; color: #555; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.empty-queue p { margin: 0; font-size: 1.1rem; color: #888; }
+.empty-queue span { font-size: 0.85rem; }
+
+/* Modal de Confirmação */
+.confirm-text { font-size: 1.1rem; color: #ccc; line-height: 1.6; margin: 0; }
+.confirm-text strong { color: #ff3333; font-weight: 700; }
+
+/* Modal de Transferência */
+.transfer-instruction { margin: 0 0 1.5rem 0; color: #aaa; font-size: 0.95rem; }
+.transfer-instruction strong { color: #ff3333; font-weight: 700; }
+.entity-select-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.entity-select-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.2rem; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.entity-select-item:hover { background: #1a1a1a; border-color: #444; }
+.entity-select-item.selected { background: rgba(255, 51, 51, 0.1); border-color: #ff3333; }
+.entity-select-info { display: flex; flex-direction: column; gap: 0.3rem; }
+.entity-select-info strong { color: #fff; font-size: 1rem; }
+.entity-select-info span { color: #888; font-size: 0.85rem; font-style: italic; }
+.entity-select-badge { background: #1a1a1a; border: 1px solid #333; padding: 0.3rem 0.8rem; border-radius: 20px; color: #aaa; font-size: 0.8rem; font-weight: 600; }
+
+/* Modal de Remover Entidade */
+.remove-entity-modal { width: 650px; max-width: 90vw; }
+.remove-warning { font-size: 1.1rem; color: #ffaa00; margin: 0 0 1rem 0; line-height: 1.6; }
+.remove-warning strong { color: #ff3333; font-weight: 700; }
+.remove-instruction { font-size: 0.95rem; color: #aaa; margin: 0 0 1.5rem 0; }
+
+.remove-options { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+.remove-option { display: flex; align-items: center; gap: 1rem; padding: 1.2rem; background: #0a0a0a; border: 2px solid #222; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.remove-option:hover { background: #1a1a1a; border-color: #444; }
+.remove-option.selected { background: rgba(255, 51, 51, 0.05); border-color: #ff3333; }
+.remove-option-icon { width: 48px; height: 48px; background: #1a1a1a; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4a9eff; flex-shrink: 0; }
+.remove-option-icon.danger { color: #ff5555; }
+.remove-option.selected .remove-option-icon { background: rgba(255, 51, 51, 0.1); }
+.remove-option-content { display: flex; flex-direction: column; gap: 0.3rem; }
+.remove-option-content strong { color: #fff; font-size: 1rem; }
+.remove-option-content span { color: #888; font-size: 0.85rem; }
+
+.transfer-select { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #222; }
+.transfer-select label { display: block; margin-bottom: 1rem; color: #aaa; font-size: 0.95rem; }
+
+/* Listas dos outros modais */
+.medium-list, .entity-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.medium-item, .entity-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.2rem; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+.medium-item:hover, .entity-item:hover { background: #1a1a1a; border-color: #444; }
+.medium-item.selected, .entity-item.selected { background: rgba(255, 51, 51, 0.1); border-color: #ff3333; }
+.checkbox { width: 24px; height: 24px; border: 2px solid #444; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+.checkbox.checked { background: #ff3333; border-color: #ff3333; }
+.checkbox svg { color: #fff; }
+.medium-name, .entity-name { font-size: 1rem; color: #fff; font-weight: 500; }
+.entities-container { display: flex; flex-direction: column; gap: 1.5rem; }
+.medium-box { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 1.5rem; }
+.medium-box-title { margin: 0 0 1rem 0; font-size: 1.1rem; color: #ff3333; font-weight: 600; padding-bottom: 0.8rem; border-bottom: 1px solid #222; }
+.empty-list, .empty-entities { text-align: center; padding: 2rem; color: #666; font-style: italic; }
+
+/* Ajuste para nomes de entidades grandes com múltiplas linhas */
+.entity-card-name {
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.entity-card {}
+
+.entity-card-content {}
+
+
