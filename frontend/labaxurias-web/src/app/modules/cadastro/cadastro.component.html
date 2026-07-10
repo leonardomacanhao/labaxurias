@@ -10,7 +10,7 @@
 </div>
 
 <div class="tab-content">
-  
+
   <!-- ABA MÉDIUNS -->
   @if (activeTab === 'medium') {
     <div class="medium-layout">
@@ -40,7 +40,7 @@
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                   </svg>
                 </button>
-                <button class="icon-btn delete" (click)="deleteMedium(medium.id)" title="Excluir">
+                <button class="icon-btn delete" (click)="confirmDeleteMedium(medium)" title="Excluir">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -97,7 +97,7 @@
                         <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
                       </svg>
                     </button>
-                    <button class="icon-btn delete" (click)="deleteEntity(entity.id)" title="Excluir">
+                    <button class="icon-btn delete" (click)="confirmDeleteEntity(entity)" title="Excluir">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -161,6 +161,30 @@
       <div class="modal-footer">
         <button class="btn-cancel" (click)="closeEditEntityModal()">Cancelar</button>
         <button class="btn-save" (click)="saveEditEntity()">Salvar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal de Confirmação de Exclusão -->
+@if (showDeleteConfirmModal && itemToDelete) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmar Exclusão</h2>
+        <button class="modal-close" (click)="cancelDelete()">×</button>
+      </div>
+      <div class="modal-body">
+        @if (itemToDelete.type === 'medium') {
+          <p class="confirm-text">Tem certeza que deseja excluir o médium <strong>"{{ itemToDelete.name }}"</strong>?</p>
+          <p class="confirm-warning">Isso também excluirá todas as entidades deste médium.</p>
+        } @else {
+          <p class="confirm-text">Tem certeza que deseja excluir a entidade <strong>"{{ itemToDelete.name }}"</strong>?</p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelDelete()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmDelete()">Excluir</button>
       </div>
     </div>
   </div>

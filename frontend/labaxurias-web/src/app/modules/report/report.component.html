@@ -1,0 +1,92 @@
+<app-page-header title="Relatórios">
+  <div class="header-actions">
+    <div class="date-picker-wrapper">
+      <label>Data do Relatório:</label>
+      <div class="date-display" (click)="openCalendar()">
+        <span class="formatted-date">{{ selectedDate | date:'dd/MM/yyyy' }}</span>
+        <span class="calendar-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <input #dateInput type="date" [(ngModel)]="selectedDate" (input)="onDateChange()" (keydown)="$event.preventDefault()" class="date-input-hidden">
+      </div>
+    </div>
+  </div>
+</app-page-header>
+
+<div class="tabs">
+  <button [class.active]="activeTab === 'attendance'" (click)="setTab('attendance')">Atendimentos</button>
+  <button [class.active]="activeTab === 'registration'" (click)="setTab('registration')">Cadastros</button>
+</div>
+
+<div class="content-area">
+  @if (loading) {
+    <div class="loading">Carregando relatório...</div>
+  } @else if (!reportData || reportData.entities.length === 0) {
+    <div class="empty-state">
+      <h2>Nenhum dado encontrado</h2>
+      <p>Não há registros para a data selecionada.</p>
+    </div>
+  } @else {
+    <div class="summary">
+      <div class="summary-item">
+        <span class="summary-label">Total de {{ activeTab === 'attendance' ? 'Atendimentos' : 'Cadastros' }}</span>
+        <span class="summary-value">{{ getTotalAttendances() }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Entidades</span>
+        <span class="summary-value">{{ reportData.entities.length }}</span>
+      </div>
+    </div>
+
+    <div class="entities-list">
+      @for (entity of reportData.entities; track entity.entityName) {
+        <div class="entity-card">
+          <div class="entity-header">
+            <div class="entity-info">
+              <h3 class="entity-name">{{ entity.entityName }}</h3>
+              <p class="medium-name">{{ entity.mediumName }}</p>
+            </div>
+            @if (activeTab === 'attendance') {
+              <div class="entity-stat">
+                <span class="stat-number">{{ entity.totalCalled }}</span>
+                <span class="stat-label">Atendimentos</span>
+              </div>
+            }
+          </div>
+
+          <div class="attendance-list">
+            @if (activeTab === 'attendance' && entity.attendances) {
+              @for (attendance of entity.attendances; track attendance.clientName) {
+                <div class="attendance-item">
+                  <span class="client-name">{{ attendance.clientName }}</span>
+                  <span class="time">{{ formatDateTime(attendance.calledAt) }}</span>
+                </div>
+              } @empty {
+                <div class="empty-list">Nenhum atendimento realizado</div>
+              }
+            } @else if (activeTab === 'registration' && entity.registrations) {
+              @for (registration of entity.registrations; track registration.clientName) {
+                <div class="attendance-item">
+                  <span class="client-name">{{ registration.clientName }}</span>
+                  <div class="time-info">
+                    <span class="time">Cadastrado: {{ formatDateTime(registration.createdAt) }}</span>
+                    @if (registration.isCalled) {
+                      <span class="called-time">Atendido: {{ formatDateTime(registration.calledAt) }}</span>
+                    }
+                  </div>
+                </div>
+              } @empty {
+                <div class="empty-list">Nenhum cadastro realizado</div>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

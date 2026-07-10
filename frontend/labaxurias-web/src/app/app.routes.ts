@@ -6,6 +6,7 @@ import { AdminLayoutComponent } from './core/components/admin-layout/admin-layou
 import { CadastroComponent } from './modules/cadastro/cadastro.component';
 import { AtendimentosComponent } from './modules/atendimentos/atendimentos.component';
 import { GiraComponent } from './modules/gira/gira.component';
+import { ReportComponent } from './modules/report/report.component';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,10 @@ export const routes: Routes = [
       {
         path: 'cadastros',
         component: CadastroComponent
+      },
+      {
+        path: 'relatorios',
+        component: ReportComponent
       }
     ]
   },

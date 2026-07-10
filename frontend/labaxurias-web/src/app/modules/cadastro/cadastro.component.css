@@ -149,7 +149,6 @@
   font-weight: 500;
 }
 
-/* Botões com design igual ao da tela de atendimentos */
 .card-actions {
   display: flex;
   gap: 0.5rem;
@@ -332,4 +331,50 @@
 .btn-cancel:hover {
   background: #2a2a2a;
   border-color: #555;
+}
+
+/* Modal de Confirmação */
+.confirm-modal {
+  width: 450px;
+  max-width: 90vw;
+}
+
+.confirm-text {
+  font-size: 1.1rem;
+  color: #ccc;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.confirm-text strong {
+  color: #ff3333;
+  font-weight: 700;
+}
+
+.confirm-warning {
+  font-size: 0.95rem;
+  color: #ff8888;
+  margin: 0;
+  padding: 0.8rem;
+  background: rgba(255, 51, 51, 0.1);
+  border-left: 3px solid #ff3333;
+  border-radius: 4px;
+}
+
+.btn-danger {
+  background: #cc0000;
+  color: #fff;
+  border: 1px solid #cc0000;
+  padding: 0.8rem 1.8rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: #990000;
+  border-color: #990000;
 }

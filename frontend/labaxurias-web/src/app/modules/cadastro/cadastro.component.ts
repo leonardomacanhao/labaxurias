@@ -15,7 +15,7 @@ import { PageHeaderComponent } from '../../core/components/page-header/page-head
 })
 export class CadastroComponent implements OnInit {
   activeTab: 'medium' | 'entidade' = 'medium';
-  
+
   mediums: Medium[] = [];
   entities: Guide[] = [];
 
@@ -27,6 +27,10 @@ export class CadastroComponent implements OnInit {
   newEntity: Partial<Guide> = { name: '', mediumId: '' };
   showEditEntityModal: boolean = false;
   editingEntity: Partial<Guide> = { id: '', name: '', mediumId: '' };
+
+  // Modal de confirmação
+  showDeleteConfirmModal: boolean = false;
+  itemToDelete: { id: string; name: string; type: 'medium' | 'entity' } | null = null;
 
   constructor(
     private api: ApiService,
@@ -47,8 +51,7 @@ export class CadastroComponent implements OnInit {
   loadMediums() {
     this.api.getMediums().subscribe({
       next: (mediums) => {
-        // Ordena alfabeticamente ignorando acentos (pt-BR)
-        this.mediums = mediums.sort((a, b) => 
+        this.mediums = mediums.sort((a, b) =>
           a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
         );
         this.cdr.detectChanges();
@@ -89,20 +92,44 @@ export class CadastroComponent implements OnInit {
     });
   }
 
-  deleteMedium(id: string) {
-    if (confirm('Tem certeza? Isso também excluirá todas as entidades deste médium.')) {
-      this.api.deleteMedium(id).subscribe({
-        next: () => {
-          if (this.selectedMediumId === id) {
-            this.selectedMediumId = null;
-            this.entities = [];
-          }
-          this.loadMediums();
-        },
-        error: (err) => console.error('Erro ao excluir médium:', err)
-      });
-    }
+  confirmDeleteMedium(medium: Medium) {
+    this.itemToDelete = { id: medium.id, name: medium.name, type: 'medium' };
+    this.showDeleteConfirmModal = true;
   }
+
+  cancelDelete() {
+    this.showDeleteConfirmModal = false;
+    this.itemToDelete = null;
+  }
+
+confirmDelete() {
+  if (!this.itemToDelete) return;
+
+  // Fechar o modal imediatamente
+  const itemToDelete = this.itemToDelete;
+  this.showDeleteConfirmModal = false;
+  this.itemToDelete = null;
+
+  if (itemToDelete.type === 'medium') {
+    this.api.deleteMedium(itemToDelete.id).subscribe({
+      next: () => {
+        if (this.selectedMediumId === itemToDelete.id) {
+          this.selectedMediumId = null;
+          this.entities = [];
+        }
+        this.loadMediums();
+      },
+      error: (err) => console.error('Erro ao excluir médium:', err)
+    });
+  } else if (itemToDelete.type === 'entity') {
+    this.api.deleteGuide(itemToDelete.id).subscribe({
+      next: () => {
+        this.loadEntities();
+      },
+      error: (err) => console.error('Erro ao excluir entidade:', err)
+    });
+  }
+}
 
   loadEntities() {
     if (!this.selectedMediumId) {
@@ -112,8 +139,7 @@ export class CadastroComponent implements OnInit {
     }
     this.api.getGuidesByMediumId(this.selectedMediumId).subscribe({
       next: (entities) => {
-        // Ordena entidades alfabeticamente ignorando acentos (pt-BR)
-        this.entities = entities.sort((a, b) => 
+        this.entities = entities.sort((a, b) =>
           a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
         );
         this.cdr.detectChanges();
@@ -159,14 +185,8 @@ export class CadastroComponent implements OnInit {
     });
   }
 
-  deleteEntity(id: string) {
-    if (confirm('Tem certeza que deseja excluir esta entidade?')) {
-      this.api.deleteGuide(id).subscribe({
-        next: () => {
-          this.loadEntities();
-        },
-        error: (err) => console.error('Erro ao excluir entidade:', err)
-      });
-    }
+  confirmDeleteEntity(entity: Guide) {
+    this.itemToDelete = { id: entity.id, name: entity.name, type: 'entity' };
+    this.showDeleteConfirmModal = true;
   }
 }
