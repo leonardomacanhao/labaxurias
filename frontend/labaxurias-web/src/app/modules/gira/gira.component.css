@@ -1,3 +1,13 @@
+/* Date Picker */
+.date-picker-wrapper { display: flex; align-items: center; gap: 1rem; background: #111; padding: 0.8rem 1.5rem; border-radius: 8px; border: 1px solid #333; }
+.date-picker-wrapper label { font-size: 0.9rem; opacity: 0.8; font-weight: 600; letter-spacing: 1px; color: #aaa; }
+.date-display { position: relative; display: flex; align-items: center; background: #000; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+.date-display:hover { border-color: #ff3333; }
+.formatted-date { font-size: 1rem; font-weight: 700; color: #fff; padding: 0.5rem 1rem; min-width: 100px; text-align: center; cursor: pointer; }
+.calendar-icon { display: flex; align-items: center; justify-content: center; padding: 0 0.8rem; background: rgba(255, 51, 51, 0.1); border-left: 1px solid #333; color: #ff3333; cursor: pointer; height: 100%; }
+.date-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+/* Content */
 .content-area {
   flex: 1;
   background: #0a0a0a;
@@ -5,19 +15,6 @@
   border: 1px solid #222;
   padding: 2rem;
   overflow-y: auto;
-}
-
-.date-display {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #1a1a1a;
-  color: #fff;
-  padding: 0.8rem 1.5rem;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: 1px;
 }
 
 .placeholder-message {
@@ -41,6 +38,7 @@
   opacity: 0.7;
 }
 
+/* Entities Grid */
 .entities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -64,9 +62,7 @@
   gap: 1rem;
 }
 
-.entity-info {
-  flex: 1;
-}
+.entity-info { flex: 1; }
 
 .entity-name {
   margin: 0 0 0.3rem 0;
@@ -82,6 +78,7 @@
   font-style: italic;
 }
 
+/* Call Button */
 .btn-call-next {
   display: flex;
   align-items: center;
@@ -98,16 +95,10 @@
   white-space: nowrap;
 }
 
-.btn-call-next:hover:not(:disabled) {
-  background: #cc0000;
-}
+.btn-call-next:hover:not(:disabled) { background: #cc0000; }
+.btn-call-next:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-.btn-call-next:disabled {
-  background: #333;
-  color: #666;
-  cursor: not-allowed;
-}
-
+/* Queue Stats */
 .queue-stats {
   display: flex;
   gap: 1rem;
@@ -124,26 +115,12 @@
   flex: 1;
 }
 
-.stat-number {
-  font-size: 1.5rem;
-  font-weight: 700;
-}
+.stat-number { font-size: 1.5rem; font-weight: 700; }
+.stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+.stat.pending .stat-number { color: #4ade80; }
+.stat.called .stat-number { color: #ff5555; }
 
-.stat-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.7;
-}
-
-.stat.pending .stat-number {
-  color: #4ade80;
-}
-
-.stat.called .stat-number {
-  color: #ff5555;
-}
-
+/* Queue List */
 .queue-list {
   display: flex;
   flex-direction: column;
@@ -164,103 +141,12 @@
   transition: 0.2s;
 }
 
-.queue-item:hover {
-  background: #1a1a1a;
-  border-color: #333;
-}
+.queue-item:hover { background: #1a1a1a; border-color: #333; }
+.item-name { font-size: 0.95rem; color: #4ade80; font-weight: 500; }
 
-.item-name {
-  font-size: 0.95rem;
-  color: #4ade80;
-  font-weight: 500;
-}
+.queue-item.called { background: rgba(255, 51, 51, 0.05); border-color: rgba(255, 51, 51, 0.2); }
+.queue-item.called .item-name { color: #ff5555; text-decoration: line-through; opacity: 0.7; }
 
-.queue-item.called {
-  background: rgba(255, 51, 51, 0.05);
-  border-color: rgba(255, 51, 51, 0.2);
-}
+.called-badge { font-size: 0.7rem; color: #ff5555; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
-.queue-item.called .item-name {
-  color: #ff5555;
-  text-decoration: line-through;
-  opacity: 0.7;
-}
-
-.called-badge {
-  font-size: 0.7rem;
-  color: #ff5555;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
-}
-
-.empty-queue {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-  font-style: italic;
-  font-size: 0.9rem;
-}
-
-/* Date Picker */
-.date-picker-wrapper { 
-  display: flex; 
-  align-items: center; 
-  gap: 1rem; 
-  background: #111; 
-  padding: 0.8rem 1.5rem; 
-  border-radius: 8px; 
-  border: 1px solid #333; 
-}
-
-.date-picker-wrapper label { 
-  font-size: 0.9rem; 
-  opacity: 0.8; 
-  font-weight: 600; 
-  letter-spacing: 1px; 
-  color: #aaa; 
-}
-
-.date-display { 
-  position: relative; 
-  display: flex; 
-  align-items: center; 
-  background: #000; 
-  border: 1px solid #444; 
-  border-radius: 6px; 
-  overflow: hidden; 
-  cursor: pointer;
-}
-
-.date-display:hover { 
-  border-color: #ff3333; 
-}
-
-.formatted-date { 
-  font-size: 1rem; 
-  font-weight: 700; 
-  color: #fff; 
-  padding: 0.5rem 1rem; 
-  min-width: 100px; 
-  text-align: center; 
-}
-
-.calendar-icon { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  padding: 0 0.8rem; 
-  background: rgba(255, 51, 51, 0.1); 
-  border-left: 1px solid #333; 
-  color: #ff3333; 
-}
-
-.date-input-hidden { 
-  position: absolute; 
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%; 
-  opacity: 0; 
-  cursor: pointer; 
-}
+.empty-queue { text-align: center; padding: 2rem; color: #666; font-style: italic; font-size: 0.9rem; }

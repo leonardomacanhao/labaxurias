@@ -77,32 +77,107 @@ public class SessionController : ControllerBase
 
         if (session == null)
         {
+            // Criar nova sessão
             session = new SessionModel { Date = sessionDate };
             _db.Sessions.Add(session);
+            await _db.SaveChangesAsync();
+
+            int order = 0;
+            foreach (var entity in request.Entities)
+            {
+                var sessionEntity = new SessionEntity
+                {
+                    SessionId = session.Id,
+                    SpiritualGuideId = entity.EntityId,
+                    Order = order++,
+                    QueueItems = entity.QueueItems.Select((qi, idx) => new QueueItem
+                    {
+                        ClientName = qi.Name,
+                        Order = idx,
+                        SpiritualGuideId = entity.EntityId
+                    }).ToList()
+                };
+                _db.SessionEntities.Add(sessionEntity);
+            }
         }
         else
         {
-            _db.SessionEntities.RemoveRange(session.SessionEntities);
-        }
+            // Merge inteligente: preservar estados isCalled
+            var existingEntities = session.SessionEntities.ToDictionary(se => se.SpiritualGuideId);
+            var requestEntityIds = request.Entities.Select(e => e.EntityId).ToHashSet();
 
-        await _db.SaveChangesAsync();
-
-        int order = 0;
-        foreach (var entity in request.Entities)
-        {
-            var sessionEntity = new SessionEntity
+            // Remover entidades que não estão mais na requisição
+            foreach (var existing in session.SessionEntities.ToList())
             {
-                SessionId = session.Id,
-                SpiritualGuideId = entity.EntityId,
-                Order = order++,
-                QueueItems = entity.QueueItems.Select((qi, idx) => new QueueItem
+                if (!requestEntityIds.Contains(existing.SpiritualGuideId))
                 {
-                    ClientName = qi.Name,
-                    Order = idx,
-                    SpiritualGuideId = entity.EntityId
-                }).ToList()
-            };
-            _db.SessionEntities.Add(sessionEntity);
+                    _db.SessionEntities.Remove(existing);
+                }
+            }
+
+            // Atualizar ou criar entidades
+            int order = 0;
+            foreach (var entity in request.Entities)
+            {
+                if (existingEntities.TryGetValue(entity.EntityId, out var existingEntity))
+                {
+                    // Entidade já existe - fazer merge dos queueItems
+                    existingEntity.Order = order++;
+                    
+                    // Criar dicionário dos queueItems existentes por nome
+                    var existingQueueItems = existingEntity.QueueItems.ToDictionary(qi => qi.ClientName);
+                    
+                    // Remover queueItems que não estão mais na requisição
+                    var requestQueueItemNames = entity.QueueItems.Select(qi => qi.Name).ToHashSet();
+                    foreach (var existingQI in existingEntity.QueueItems.ToList())
+                    {
+                        if (!requestQueueItemNames.Contains(existingQI.ClientName))
+                        {
+                            _db.QueueItems.Remove(existingQI);
+                        }
+                    }
+                    
+                    // Atualizar ordem dos queueItems existentes e adicionar novos
+                    int qiOrder = 0;
+                    foreach (var qiRequest in entity.QueueItems)
+                    {
+                        if (existingQueueItems.TryGetValue(qiRequest.Name, out var existingQI))
+                        {
+                            // QueueItem existe - preservar isCalled e calledAt, apenas atualizar ordem
+                            existingQI.Order = qiOrder++;
+                        }
+                        else
+                        {
+                            // QueueItem novo - criar
+                            existingEntity.QueueItems.Add(new QueueItem
+                            {
+                                ClientName = qiRequest.Name,
+                                Order = qiOrder++,
+                                SpiritualGuideId = entity.EntityId,
+                                IsCalled = false
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    // Entidade nova - criar do zero
+                    var sessionEntity = new SessionEntity
+                    {
+                        SessionId = session.Id,
+                        SpiritualGuideId = entity.EntityId,
+                        Order = order++,
+                        QueueItems = entity.QueueItems.Select((qi, idx) => new QueueItem
+                        {
+                            ClientName = qi.Name,
+                            Order = idx,
+                            SpiritualGuideId = entity.EntityId,
+                            IsCalled = false
+                        }).ToList()
+                    };
+                    _db.SessionEntities.Add(sessionEntity);
+                }
+            }
         }
 
         await _db.SaveChangesAsync();

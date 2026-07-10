@@ -3,23 +3,19 @@
   backdrop-filter: blur(10px);
   padding: 1.5rem 2rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .header-left {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.75rem;
 }
 .title {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
-  text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 .subtitle {
@@ -27,13 +23,11 @@
   opacity: 0.9;
   margin: 0;
   font-weight: 300;
-  text-align: center;
 }
 .header-right {
-  text-align: center;
+  text-align: right;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.75rem;
 }
 .date {
@@ -41,11 +35,25 @@
   opacity: 0.9;
   font-weight: 300;
   text-transform: capitalize;
-  text-align: center;
 }
 .time {
   font-size: 2.5rem;
   font-weight: 700;
-  text-align: center;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+@media (max-width: 768px) {
+  .header-info {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  .header-right {
+    text-align: center;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .time {
+    font-size: 2rem;
+  }
 }

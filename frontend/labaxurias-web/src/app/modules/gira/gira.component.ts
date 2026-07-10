@@ -52,6 +52,12 @@ export class GiraComponent implements OnInit {
     
     this.loadSessionData();
     this.setupSignalR();
+    
+    // Recarregar dados quando a janela ganhar foco (usuário volta para a tela)
+    window.addEventListener('focus', () => {
+      console.log('🔄 Recarregando dados ao focar na janela');
+      this.loadSessionData();
+    });
   }
 
   openCalendar(): void { 
@@ -65,8 +71,10 @@ export class GiraComponent implements OnInit {
   }
 
   loadSessionData(): void {
+    console.log('🔄 Carregando dados para data:', this.selectedDate);
     this.api.getSessionByDate(this.selectedDate).subscribe({
       next: (data) => {
+        console.log('✅ Dados carregados:', data);
         this.sessionEntities = data.sessionEntities.map((se: any) => ({
           sessionEntityId: se.sessionEntityId,
           entityId: se.entityId,
@@ -82,7 +90,7 @@ export class GiraComponent implements OnInit {
         }));
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao carregar sessão:', err)
+      error: (err) => console.error('❌ Erro ao carregar sessão:', err)
     });
   }
 
@@ -94,21 +102,13 @@ export class GiraComponent implements OnInit {
 
     this.hubConnection.start()
       .then(() => console.log('✅ Conectado ao SignalR'))
-      .catch(err => console.error(' Erro ao conectar SignalR:', err));
+      .catch(err => console.error('❌ Erro ao conectar SignalR:', err));
 
     this.hubConnection.on('ReceiveCall', (data: any) => {
       console.log('📢 Chamada recebida:', data);
       
-      // Marcar o consulente como chamado
-      const entity = this.sessionEntities.find(e => e.sessionEntityId === data.sessionEntityId);
-      if (entity) {
-        const queueItem = entity.queueItems.find(q => q.id === data.queueItemId);
-        if (queueItem) {
-          queueItem.isCalled = true;
-          queueItem.calledAt = data.calledAt;
-          this.cdr.detectChanges();
-        }
-      }
+      // Recarregar dados para garantir que está atualizado
+      this.loadSessionData();
     });
   }
 
@@ -116,7 +116,8 @@ export class GiraComponent implements OnInit {
     this.api.callNextBySessionEntity(sessionEntity.sessionEntityId).subscribe({
       next: (data) => {
         console.log('✅ Próximo chamado:', data);
-        // O SignalR vai atualizar automaticamente
+        // Recarregar dados após chamar
+        setTimeout(() => this.loadSessionData(), 500);
       },
       error: (err) => {
         console.error('❌ Erro ao chamar próximo:', err);
