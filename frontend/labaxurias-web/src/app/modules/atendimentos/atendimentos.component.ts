@@ -55,6 +55,8 @@ export class AtendimentosComponent implements OnInit {
   showRemoveEntityModal: boolean = false;
   entityToRemove: SelectedEntity | null = null;
   removeEntityAction: 'transfer' | 'delete' | null = null;
+  showConfirmRemoveEmptyModal: boolean = false;
+  entityToRemoveEmpty: SelectedEntity | null = null;
 
   constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
@@ -246,12 +248,25 @@ export class AtendimentosComponent implements OnInit {
       this.removeEntityAction = null;
       this.showRemoveEntityModal = true;
     } else {
-      if (confirm(`Tem certeza que deseja remover "${entity.entityName}" da sessão?`)) {
-        this.selectedEntities = this.selectedEntities.filter(e => e.entityId !== entity.entityId);
-        delete this.entityQueues[entity.entityId];
-        this.saveSession();
-      }
+      this.entityToRemoveEmpty = entity;
+      this.showConfirmRemoveEmptyModal = true;
     }
+  }
+
+  cancelRemoveEmptyEntity(): void {
+    this.showConfirmRemoveEmptyModal = false;
+    this.entityToRemoveEmpty = null;
+  }
+
+  confirmRemoveEmptyEntity(): void {
+    if (!this.entityToRemoveEmpty) return;
+    
+    this.selectedEntities = this.selectedEntities.filter(e => e.entityId !== this.entityToRemoveEmpty!.entityId);
+    delete this.entityQueues[this.entityToRemoveEmpty.entityId];
+    this.saveSession();
+    
+    this.showConfirmRemoveEmptyModal = false;
+    this.entityToRemoveEmpty = null;
   }
 
   confirmRemoveWithTransfer(): void {

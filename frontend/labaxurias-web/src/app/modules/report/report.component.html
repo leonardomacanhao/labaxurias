@@ -20,73 +20,102 @@
 
 <div class="tabs">
   <button [class.active]="activeTab === 'attendance'" (click)="setTab('attendance')">Atendimentos</button>
-  <button [class.active]="activeTab === 'registration'" (click)="setTab('registration')">Cadastros</button>
+  <button [class.active]="activeTab === 'consulentes'" (click)="setTab('consulentes')">Consulentes</button>
 </div>
 
 <div class="content-area">
   @if (loading) {
     <div class="loading">Carregando relatório...</div>
-  } @else if (!reportData || reportData.entities.length === 0) {
-    <div class="empty-state">
-      <h2>Nenhum dado encontrado</h2>
-      <p>Não há registros para a data selecionada.</p>
-    </div>
-  } @else {
-    <div class="summary">
-      <div class="summary-item">
-        <span class="summary-label">Total de {{ activeTab === 'attendance' ? 'Atendimentos' : 'Cadastros' }}</span>
-        <span class="summary-value">{{ getTotalAttendances() }}</span>
+  } @else if (activeTab === 'attendance') {
+    <!-- ABA ATENDIMENTOS -->
+    @if (!reportData || reportData.entities.length === 0) {
+      <div class="empty-state">
+        <h2>Nenhum dado encontrado</h2>
+        <p>Não há registros de atendimentos para a data selecionada.</p>
       </div>
-      <div class="summary-item">
-        <span class="summary-label">Entidades</span>
-        <span class="summary-value">{{ reportData.entities.length }}</span>
+    } @else {
+      <div class="summary">
+        <div class="summary-item">
+          <span class="summary-label">Total de Atendimentos</span>
+          <span class="summary-value">{{ getTotalAttendances() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Entidades</span>
+          <span class="summary-value">{{ reportData.entities.length }}</span>
+        </div>
       </div>
-    </div>
 
-    <div class="entities-list">
-      @for (entity of reportData.entities; track entity.entityName) {
-        <div class="entity-card">
-          <div class="entity-header">
-            <div class="entity-info">
-              <h3 class="entity-name">{{ entity.entityName }}</h3>
-              <p class="medium-name">{{ entity.mediumName }}</p>
-            </div>
-            @if (activeTab === 'attendance') {
+      <div class="entities-list">
+        @for (entity of reportData.entities; track entity.entityName) {
+          <div class="entity-card">
+            <div class="entity-header">
+              <div class="entity-info">
+                <h3 class="entity-name">{{ entity.entityName }}</h3>
+                <p class="medium-name">{{ entity.mediumName }}</p>
+              </div>
               <div class="entity-stat">
                 <span class="stat-number">{{ entity.totalCalled }}</span>
                 <span class="stat-label">Atendimentos</span>
               </div>
-            }
-          </div>
+            </div>
 
-          <div class="attendance-list">
-            @if (activeTab === 'attendance' && entity.attendances) {
-              @for (attendance of entity.attendances; track attendance.clientName) {
-                <div class="attendance-item">
-                  <span class="client-name">{{ attendance.clientName }}</span>
-                  <span class="time">{{ formatDateTime(attendance.calledAt) }}</span>
-                </div>
-              } @empty {
+            <div class="attendance-list">
+              @if (entity.attendances && entity.attendances.length > 0) {
+                @for (attendance of entity.attendances; track attendance.clientName) {
+                  <div class="attendance-item">
+                    <span class="client-name">{{ attendance.clientName }}</span>
+                    <span class="time">{{ formatDateTime(attendance.calledAt) }}</span>
+                  </div>
+                }
+              } @else {
                 <div class="empty-list">Nenhum atendimento realizado</div>
               }
-            } @else if (activeTab === 'registration' && entity.registrations) {
-              @for (registration of entity.registrations; track registration.clientName) {
-                <div class="attendance-item">
-                  <span class="client-name">{{ registration.clientName }}</span>
-                  <div class="time-info">
-                    <span class="time">Cadastrado: {{ formatDateTime(registration.createdAt) }}</span>
-                    @if (registration.isCalled) {
-                      <span class="called-time">Atendido: {{ formatDateTime(registration.calledAt) }}</span>
-                    }
-                  </div>
-                </div>
-              } @empty {
-                <div class="empty-list">Nenhum cadastro realizado</div>
-              }
-            }
+            </div>
           </div>
+        }
+      </div>
+    }
+  } @else {
+    <!-- ABA CONSULENTES -->
+    @if (consulentesList.length === 0) {
+      <div class="empty-state">
+        <h2>Nenhum consulente cadastrado</h2>
+        <p>Não há registros de consulentes para a data selecionada.</p>
+      </div>
+    } @else {
+      <div class="summary">
+        <div class="summary-item">
+          <span class="summary-label">Total de Consulentes</span>
+          <span class="summary-value">{{ consulentesList.length }}</span>
         </div>
-      }
-    </div>
+        <div class="summary-item">
+          <span class="summary-label">Atendidos</span>
+          <span class="summary-value">{{ consulentesList | filterCalled }}</span>
+        </div>
+      </div>
+
+      <div class="consulentes-card">
+        <div class="consulentes-header">
+          <h3>Lista de Consulentes (Ordem Alfabética)</h3>
+        </div>
+        <div class="consulentes-list">
+          @for (consulente of consulentesList; track consulente.clientName + consulente.createdAt) {
+            <div class="consulente-item" [class.called]="consulente.isCalled">
+              <div class="consulente-info">
+                <span class="consulente-name">{{ consulente.clientName }}</span>
+                <span class="consulente-entity">{{ consulente.entityName }} · {{ consulente.mediumName }}</span>
+              </div>
+              <div class="consulente-time">
+                <span class="time-label">Cadastrado:</span>
+                <span class="time-value">{{ formatDateTime(consulente.createdAt) }}</span>
+                @if (consulente.isCalled && consulente.calledAt) {
+                  <span class="called-info">Atendido: {{ formatDateTime(consulente.calledAt) }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
   }
 </div>

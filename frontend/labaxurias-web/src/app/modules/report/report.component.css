@@ -210,3 +210,98 @@
 .formatted-date { font-size: 1rem; font-weight: 700; color: #fff; padding: 0.5rem 1rem; min-width: 100px; text-align: center; cursor: pointer; }
 .calendar-icon { display: flex; align-items: center; justify-content: center; padding: 0 0.8rem; background: rgba(255, 51, 51, 0.1); border-left: 1px solid #333; color: #ff3333; cursor: pointer; height: 100%; }
 .date-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+/* Consulentes */
+.consulentes-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.consulentes-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #222;
+}
+
+.consulentes-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.consulentes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.consulente-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  background: #0f0f0f;
+  border: 1px solid #222;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.consulente-item:hover {
+  background: #1a1a1a;
+  border-color: #333;
+}
+
+.consulente-item.called {
+  background: rgba(74, 222, 128, 0.05);
+  border-color: rgba(74, 222, 128, 0.2);
+}
+
+.consulente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.consulente-name {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.consulente-entity {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+.consulente-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.time-label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.time-value {
+  font-size: 0.95rem;
+  color: #4ade80;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.called-info {
+  font-size: 0.8rem;
+  color: #ff3333;
+  font-family: 'Courier New', monospace;
+}

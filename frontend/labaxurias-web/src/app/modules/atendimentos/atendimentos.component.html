@@ -293,3 +293,22 @@
     <div class="modal-footer"><button class="btn-secondary" (click)="closeEntityModal()">Cancelar</button><button class="btn-primary" (click)="confirmEntitySelection()">Adicionar</button></div>
   </div></div>
 }
+
+<!-- Modal de Confirmação de Remoção de Entidade Vazia -->
+@if (showConfirmRemoveEmptyModal && entityToRemoveEmpty) {
+  <div class="modal-overlay" (click)="cancelRemoveEmptyEntity()">
+    <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmar Remoção</h2>
+        <button class="modal-close" (click)="cancelRemoveEmptyEntity()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">Tem certeza que deseja remover a entidade <strong>"{{ entityToRemoveEmpty.entityName }}"</strong> da sessão?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cancelRemoveEmptyEntity()">Cancelar</button>
+        <button class="btn-danger" (click)="confirmRemoveEmptyEntity()">Remover</button>
+      </div>
+    </div>
+  </div>
+}

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
+import { FilterCalledPipe } from '../../pipes/filter-called.pipe';
 
 interface Attendance {
   clientName: string;
@@ -23,19 +24,29 @@ interface ReportData {
   entities: EntityReport[];
 }
 
+interface ConsulenteItem {
+  clientName: string;
+  createdAt: string;
+  entityName: string;
+  mediumName: string;
+  isCalled: boolean;
+  calledAt?: string;
+}
+
 @Component({
   selector: 'app-report',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, FilterCalledPipe],
   templateUrl: './report.component.html',
   styleUrl: './report.component.css'
 })
 export class ReportComponent implements OnInit {
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
   
-  activeTab: 'attendance' | 'registration' = 'attendance';
+  activeTab: 'attendance' | 'consulentes' = 'attendance';
   selectedDate: string = '';
   reportData: ReportData | null = null;
+  consulentesList: ConsulenteItem[] = [];
   loading: boolean = false;
 
   constructor(
@@ -64,7 +75,7 @@ export class ReportComponent implements OnInit {
     this.loadReport();
   }
 
-  setTab(tab: 'attendance' | 'registration'): void {
+  setTab(tab: 'attendance' | 'consulentes'): void {
     this.activeTab = tab;
     this.loadReport();
   }
@@ -76,6 +87,7 @@ export class ReportComponent implements OnInit {
       this.api.getAttendanceReport(this.selectedDate).subscribe({
         next: (data) => {
           this.reportData = data;
+          this.consulentesList = [];
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -88,6 +100,28 @@ export class ReportComponent implements OnInit {
       this.api.getRegistrationReport(this.selectedDate).subscribe({
         next: (data) => {
           this.reportData = data;
+          // Achatar lista de consulentes de todas as entidades
+          this.consulentesList = [];
+          if (data && data.entities) {
+            data.entities.forEach((entity: EntityReport) => {
+              if (entity.registrations) {
+                entity.registrations.forEach((reg: any) => {
+                  this.consulentesList.push({
+                    clientName: reg.clientName,
+                    createdAt: reg.createdAt,
+                    entityName: entity.entityName,
+                    mediumName: entity.mediumName,
+                    isCalled: reg.isCalled,
+                    calledAt: reg.calledAt
+                  });
+                });
+              }
+            });
+            // Ordenar alfabeticamente ignorando acentos
+            this.consulentesList.sort((a, b) => 
+              a.clientName.localeCompare(b.clientName, 'pt-BR', { sensitivity: 'base' })
+            );
+          }
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -111,12 +145,12 @@ export class ReportComponent implements OnInit {
 
   getTotalAttendances(): number {
     if (!this.reportData) return 0;
-    return this.reportData.entities.reduce((sum, entity) => {
-      if (this.activeTab === 'attendance') {
+    if (this.activeTab === 'attendance') {
+      return this.reportData.entities.reduce((sum, entity) => {
         return sum + (entity.totalCalled || 0);
-      } else {
-        return sum + (entity.registrations?.length || 0);
-      }
-    }, 0);
+      }, 0);
+    } else {
+      return this.consulentesList.length;
+    }
   }
 }
