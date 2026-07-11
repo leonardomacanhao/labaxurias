@@ -34,11 +34,15 @@ export class GiraComponent implements OnInit {
   selectedDate: string = '';
   sessionEntities: SessionEntity[] = [];
   private hubConnection: signalR.HubConnection | null = null;
+  private callSound: HTMLAudioElement;
 
   constructor(
     private api: ApiService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.callSound = new Audio('/assets/sounds/call.mp3');
+    this.callSound.load();
+  }
 
   ngOnInit(): void {
     // Tentar recuperar a data do localStorage, senão usar hoje
@@ -112,7 +116,21 @@ export class GiraComponent implements OnInit {
     });
   }
 
+  private playCallSound(): void {
+    try {
+      this.callSound.currentTime = 0;
+      this.callSound.play().catch(err => {
+        console.warn('⚠️ Não foi possível tocar o som:', err.message);
+      });
+    } catch (err) {
+      console.warn('⚠️ Erro ao tocar som:', err);
+    }
+  }
+
   callNext(sessionEntity: SessionEntity): void {
+    console.log('🔔 Chamando próximo da entidade:', sessionEntity.entityName);
+    this.playCallSound();
+    
     this.api.callNextBySessionEntity(sessionEntity.sessionEntityId).subscribe({
       next: (data) => {
         console.log('✅ Próximo chamado:', data);
@@ -129,6 +147,9 @@ export class GiraComponent implements OnInit {
   }
 
   repeatCall(queueItem: QueueItem): void {
+    console.log('🔔 Repetindo chamada:', queueItem.name);
+    this.playCallSound();
+    
     this.api.repeatCall(queueItem.id).subscribe({
       next: (data) => {
         console.log('✅ Chamada repetida:', data);

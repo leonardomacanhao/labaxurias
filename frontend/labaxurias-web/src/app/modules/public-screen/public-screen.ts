@@ -16,21 +16,37 @@ export class PublicScreen implements OnInit {
   nextInQueue: QueueItem | null = null;
   private queueItems: QueueItem[] = [];
   private displayTimeout: any;
+  private callSound: HTMLAudioElement;
 
   constructor(
     private signalr: SignalrService,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.callSound = new Audio('/assets/sounds/call.mp3');
+    this.callSound.load();
+  }
 
   ngOnInit(): void {
     this.signalr.startConnection();
 
     this.signalr.onReceiveCall((data) => {
       this.ngZone.run(() => {
+        this.playCallSound();
         this.processCall(data.clientName, data.guideName, data.guideId);
       });
     });
+  }
+
+  private playCallSound(): void {
+    try {
+      this.callSound.currentTime = 0;
+      this.callSound.play().catch(err => {
+        console.warn('⚠️ Não foi possível tocar o som:', err.message);
+      });
+    } catch (err) {
+      console.warn('⚠️ Erro ao tocar som:', err);
+    }
   }
 
   private processCall(clientName: string, guideName: string, guideId?: string): void {

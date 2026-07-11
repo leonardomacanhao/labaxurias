@@ -54,7 +54,7 @@
 
           <div class="queue-list">
             @for (item of entity.queueItems; track item.id) {
-              <div class="queue-item" [class.called]="item.isCalled" (click)="repeatCall(item)">
+              <div class="queue-item" [class.called]="item.isCalled" (click)="item.isCalled && repeatCall(item)">
                 <span class="item-name">{{ item.name }}</span>
                 @if (item.isCalled) {
                   <span class="called-badge">Chamado</span>
