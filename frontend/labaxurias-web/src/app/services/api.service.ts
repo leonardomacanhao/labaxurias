@@ -122,4 +122,8 @@ export class ApiService {
       `${this.baseUrl}/report/registration/${date}`
     );
   }
+
+  getCambonesReport(date: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/report/cambones/${date}`);
+  }
 }

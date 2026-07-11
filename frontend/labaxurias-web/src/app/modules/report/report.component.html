@@ -1,14 +1,25 @@
 <app-page-header title="Relatórios">
   <div class="header-actions">
-    <button class="btn-pdf" (click)="generatePdf()" [disabled]="loading">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-      </svg>
-      Gerar PDF
-    </button>
+    @if (activeTab !== 'cambones') {
+      <button class="btn-pdf" (click)="generatePdf()" [disabled]="loading">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        Gerar PDF
+      </button>
+    } @else {
+      <button class="btn-print" (click)="printCambones()" [disabled]="loading || cambonesData.length === 0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Imprimir
+      </button>
+    }
     <div class="date-picker-wrapper">
       <label>Data do Relatório:</label>
       <div class="date-display" (click)="openCalendar()">
@@ -30,6 +41,7 @@
 <div class="tabs">
   <button [class.active]="activeTab === 'attendance'" (click)="setTab('attendance')">Atendimentos</button>
   <button [class.active]="activeTab === 'consulentes'" (click)="setTab('consulentes')">Consulentes</button>
+  <button [class.active]="activeTab === 'cambones'" (click)="setTab('cambones')">Lista p/ Cambones</button>
 </div>
 
 <div class="content-area">
@@ -83,7 +95,7 @@
         }
       </div>
     }
-  } @else {
+  } @else if (activeTab === 'consulentes') {
     @if (consulentesList.length === 0) {
       <div class="empty-state">
         <h2>Nenhum consulente cadastrado</h2>
@@ -103,7 +115,7 @@
 
       <div class="consulentes-card">
         <div class="consulentes-header">
-          <h3>Lista de Consulentes (Ordem Alfabética)</h3>
+          <h3>Lista de Consulentes (Ordem de Cadastro)</h3>
         </div>
         <div class="consulentes-list">
           @for (consulente of consulentesList; track consulente.clientName + consulente.createdAt) {
@@ -124,5 +136,72 @@
         </div>
       </div>
     }
+    } @else if (activeTab === 'cambones') {
+    @if (cambonesData.length === 0) {
+      <div class="empty-state">
+        <h2>Nenhuma entidade cadastrada</h2>
+        <p>Não há registros para a data selecionada.</p>
+      </div>
+    } @else {
+      <!-- Versão visual na tela -->
+      <div class="cambones-screen-view">
+        <div class="cambones-info">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>Clique em <strong>Imprimir</strong> para gerar a lista otimizada para impressora térmica (80mm).</span>
+        </div>
+
+        <div class="cambones-preview">
+          @for (entity of cambonesData; track entity.entityName) {
+            <div class="cambones-entity">
+              <div class="cambones-entity-header">
+                <h3>{{ entity.entityName }}</h3>
+                <p>{{ entity.mediumName }}</p>
+              </div>
+              <ul class="cambones-list">
+                @for (consulente of entity.consulentes; track consulente; let i = $index) {
+                  <li><span class="item-number">{{ (i + 1).toString().padStart(2, '0') }}</span> {{ consulente }}</li>
+                }
+                @if (entity.consulentes.length === 0) {
+                  <li class="empty">Nenhum consulente cadastrado</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Versão para impressão (térmica 80mm) -->
+      <div class="cambones-print-area" id="cambonesPrintArea">
+        <div class="thermal-header">
+          <h1>LISTA DE CONSULENTES</h1>
+          <p>Data: {{ selectedDate | date:'dd/MM/yyyy' }}</p>
+        </div>
+        <div class="thermal-divider"></div>
+
+        @for (entity of cambonesData; track entity.entityName) {
+          <div class="thermal-entity">
+            <div class="thermal-entity-header">
+              <strong>{{ entity.entityName }}</strong>
+              <span>{{ entity.mediumName }}</span>
+            </div>
+            <div class="thermal-divider thin"></div>
+            <ol class="thermal-list">
+              @for (consulente of entity.consulentes; track consulente; let i = $index) {
+                <li>{{ (i + 1).toString().padStart(2, '0') }}. {{ consulente }}</li>
+              }
+            </ol>
+            <div class="thermal-divider"></div>
+          </div>
+        }
+
+        <div class="thermal-footer">
+          <p>Total de entidades: {{ cambonesData.length }}</p>
+          <p>Total de consulentes: {{ getTotalCambonesConsulentes() }}</p>
+        </div>
+      </div>
+    }
   }
-</div>

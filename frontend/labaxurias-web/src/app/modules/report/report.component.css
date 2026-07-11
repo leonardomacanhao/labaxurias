@@ -337,3 +337,274 @@
   box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
 }
 
+/* ============================================ */
+/* BOTÃO IMPRIMIR (ABA CAMBONES) */
+/* ============================================ */
+.btn-print {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.btn-print:hover:not(:disabled) {
+  background: #3a3a3a;
+  border-color: #fff;
+}
+
+.btn-print:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================ */
+/* ABA CAMBONES - VISUAL NA TELA */
+/* ============================================ */
+.cambones-screen-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cambones-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 51, 51, 0.05);
+  border-left: 3px solid #ff3333;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.cambones-info svg {
+  color: #ff3333;
+  flex-shrink: 0;
+}
+
+.cambones-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.cambones-entity {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 1.2rem;
+}
+
+.cambones-entity-header h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cambones-entity-header p {
+  margin: 0 0 1rem 0;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+.cambones-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cambones-list li {
+  padding: 0.5rem 0.7rem;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #ddd;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cambones-list li.empty {
+  color: #555;
+  font-style: italic;
+  justify-content: center;
+}
+
+.cambones-list .item-number {
+  color: #ff3333;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  min-width: 20px;
+}
+
+/* ============================================ */
+/* ÁREA DE IMPRESSÃO - IMPRESSORA TÉRMICA 80mm */
+/* ============================================ */
+.cambones-print-area {
+  display: none;
+}
+
+@media print {
+  /* Reset total */
+  @page {
+    size: 80mm auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 80mm;
+    height: auto;
+  }
+
+  /* Esconder TUDO */
+  body * {
+    visibility: hidden;
+    display: none !important;
+  }
+
+  /* Mostrar apenas a área de impressão */
+  .cambones-print-area,
+  .cambones-print-area * {
+    visibility: visible;
+    display: block;
+  }
+
+  .cambones-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    min-width: 80mm;
+    max-width: 80mm;
+    font-family: 'Courier New', monospace;
+    font-size: 9pt;
+    color: #000;
+    background: #fff;
+    padding: 3mm;
+    margin: 0;
+    box-sizing: border-box;
+    line-height: 1.3;
+  }
+
+  /* Esconder sidebar, header, etc */
+  app-page-header,
+  .tabs,
+  .content-area > .cambones-screen-view,
+  .sidebar,
+  .main-content,
+  .header-actions,
+  nav,
+  footer {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* Estilos da térmica (visíveis fora do print também) */
+.thermal-header {
+  text-align: center;
+  margin-bottom: 3mm;
+  padding: 0;
+}
+
+.thermal-header h1 {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 0 0 1mm 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.thermal-header p {
+  font-size: 9pt;
+  margin: 0;
+  padding: 0;
+}
+
+.thermal-divider {
+  border-top: 1px dashed #000;
+  margin: 2mm 0;
+  padding: 0;
+}
+
+.thermal-divider.thin {
+  margin: 1mm 0;
+  border-top-style: dotted;
+}
+
+.thermal-entity {
+  margin-bottom: 2mm;
+  padding: 0;
+}
+
+.thermal-entity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1mm;
+  gap: 2mm;
+  padding: 0;
+}
+
+.thermal-entity-header strong {
+  font-size: 10pt;
+  font-weight: 700;
+  flex: 1;
+}
+
+.thermal-entity-header span {
+  font-size: 8pt;
+  font-style: italic;
+}
+
+.thermal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.thermal-list li {
+  font-size: 9pt;
+  padding: 0.8mm 0;
+  border-bottom: 1px dotted #ccc;
+  margin: 0;
+}
+
+.thermal-list li:last-child {
+  border-bottom: none;
+}
+
+.thermal-footer {
+  margin-top: 3mm;
+  padding-top: 2mm;
+  border-top: 2px solid #000;
+  font-size: 9pt;
+  text-align: center;
+}
+
+.thermal-footer p {
+  margin: 0.5mm 0;
+  padding: 0;
+}
