@@ -97,4 +97,41 @@ public class ReportController : ControllerBase
 
         return Ok(result);
     }
+
+
+    [HttpGet("cambones/{date}")]
+    public async Task<IActionResult> GetCambonesReport(string date)
+    {
+        if (!DateTime.TryParse(date, out var reportDate))
+            return BadRequest("Data inválida");
+
+        var session = await _db.Sessions
+            .Include(s => s.SessionEntities)
+                .ThenInclude(se => se.SpiritualGuide)
+                    .ThenInclude(g => g.Medium)
+            .Include(s => s.SessionEntities)
+                .ThenInclude(se => se.QueueItems)
+            .FirstOrDefaultAsync(s => s.Date.Date == reportDate.Date);
+
+        if (session == null)
+            return Ok(new { date = reportDate, entities = new List<object>() });
+
+        var result = new
+        {
+            date = session.Date,
+            entities = session.SessionEntities
+                .OrderBy(se => se.Order)
+                .Select(se => new
+                {
+                    entityName = se.SpiritualGuide.Name,
+                    mediumName = se.SpiritualGuide.Medium.Name,
+                    consulentes = se.QueueItems
+                        .OrderBy(qi => qi.Order)
+                        .Select(qi => qi.ClientName)
+                        .ToList()
+                })
+        };
+
+        return Ok(result);
+    }
 }
