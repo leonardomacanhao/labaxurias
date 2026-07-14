@@ -11,4 +11,6 @@ public class SpiritualGuide
     public Medium? Medium { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+     public bool IsActive { get; set; } = true;
 }

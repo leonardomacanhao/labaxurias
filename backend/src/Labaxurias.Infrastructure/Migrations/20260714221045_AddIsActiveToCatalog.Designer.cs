@@ -3,6 +3,7 @@ using System;
 using Labaxurias.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Labaxurias.Infrastructure.Migrations
 {
     [DbContext(typeof(LabaxuriasDbContext))]
-    partial class LabaxuriasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260714221045_AddIsActiveToCatalog")]
+    partial class AddIsActiveToCatalog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
