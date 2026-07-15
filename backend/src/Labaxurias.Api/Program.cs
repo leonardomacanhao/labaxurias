@@ -1,90 +1,103 @@
-using Labaxurias.Api.Hubs;
-using Labaxurias.Infrastructure.Persistence;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Labaxurias.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// =========================
-// SERVICES
-// =========================
-
+// 1. Controllers e Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// SignalR
-builder.Services.AddSignalR();
+// 2. Banco de Dados (SQLite)
+builder.Services.AddDbContext<LabaxuriasDbContext>(options =>
+    options.UseSqlite("Data Source=labaxurias.db"));
 
-// CORS (CORRETO)
+// 3. Identity (Registra UserManager e SignInManager)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+.AddEntityFrameworkStores<LabaxuriasDbContext>()
+.AddDefaultTokenProviders();
+
+// 4. Autenticação JWT
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "LabaxuriasAPI",
+        ValidAudience = "LabaxuriasClient",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("LabaxuriasSuperSecretKey2024!@#MudeNoDeploy"))
+    };
+});
+
+// 5. CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocal", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .SetIsOriginAllowed(_ => true) // <- IMPORTANTE p/ dev local + SignalR
-            .AllowCredentials();
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 
-// DbContext + SQLite
-builder.Services.AddDbContext<LabaxuriasDbContext>(options =>
-{
-    var dbPath = Path.GetFullPath(
-        Path.Combine(
-            AppContext.BaseDirectory,
-            "..",
-            "..",
-            "..",
-            "..",
-            "database",
-            "labaxurias.db"
-        )
-    );
-
-    var directory = Path.GetDirectoryName(dbPath);
-    if (!Directory.Exists(directory))
-        Directory.CreateDirectory(directory!);
-
-    options.UseSqlite($"Data Source={dbPath}");
-});
-
-// =========================
-// APP
-// =========================
-
 var app = builder.Build();
 
-// Swagger
+// 6. Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// HTTPS
-app.UseHttpsRedirection();
-
-
-app.UseRouting();
-
-// CORS (TEM QUE VIR AQUI)
-app.UseCors("AllowLocal");
-
+app.UseCors("AllowAll");
+app.UseAuthentication(); // Deve vir ANTES de UseAuthorization
 app.UseAuthorization();
 
-// Controllers
 app.MapControllers();
 
-// SignalR
-app.MapHub<CallHub>("/hubs/call");
-
-// Criação do banco
+// 7. Seed Automático do Admin (Garante que o admin exista ao iniciar)
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<LabaxuriasDbContext>();
-    db.Database.EnsureCreated();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+        await roleManager.CreateAsync(new IdentityRole("User"));
+    }
+
+    var adminEmail = "admin@labaxurias.local";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser == null)
+    {
+        adminUser = new IdentityUser { UserName = "admin", Email = adminEmail, EmailConfirmed = true };
+        var result = await userManager.CreateAsync(adminUser, "131658EUliz#");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("✅ Admin criado automaticamente: admin / 131658EUliz#");
+        }
+    }
 }
 
 app.Run();
+

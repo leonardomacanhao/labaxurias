@@ -30,7 +30,7 @@ interface SessionEntity {
 })
 export class GiraComponent implements OnInit {
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
-  
+
   selectedDate: string = '';
   sessionEntities: SessionEntity[] = [];
   private hubConnection: signalR.HubConnection | null = null;
@@ -45,18 +45,16 @@ export class GiraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Tentar recuperar a data do localStorage, senão usar hoje
-    const savedDate = localStorage.getItem('gira_selected_date');
-    if (savedDate) {
-      this.selectedDate = savedDate;
-    } else {
-      const today = new Date();
-      this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
+    // Sempre usar a data atual ao abrir o sistema
+    const today = new Date();
+    this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     
+    // Salvar no localStorage para manter durante a sessão
+    localStorage.setItem('gira_selected_date', this.selectedDate);
+
     this.loadSessionData();
     this.setupSignalR();
-    
+
     // Recarregar dados quando a janela ganhar foco (usuário volta para a tela)
     window.addEventListener('focus', () => {
       console.log('🔄 Recarregando dados ao focar na janela');
@@ -64,10 +62,10 @@ export class GiraComponent implements OnInit {
     });
   }
 
-  openCalendar(): void { 
-    this.dateInput.nativeElement.showPicker(); 
+  openCalendar(): void {
+    this.dateInput.nativeElement.showPicker();
   }
-  
+
   onDateChange(): void {
     console.log('📅 Data alterada para:', this.selectedDate);
     localStorage.setItem('gira_selected_date', this.selectedDate);
@@ -110,8 +108,6 @@ export class GiraComponent implements OnInit {
 
     this.hubConnection.on('ReceiveCall', (data: any) => {
       console.log('📢 Chamada recebida:', data);
-      
-      // Recarregar dados para garantir que está atualizado
       this.loadSessionData();
     });
   }
@@ -130,11 +126,10 @@ export class GiraComponent implements OnInit {
   callNext(sessionEntity: SessionEntity): void {
     console.log('🔔 Chamando próximo da entidade:', sessionEntity.entityName);
     this.playCallSound();
-    
+
     this.api.callNextBySessionEntity(sessionEntity.sessionEntityId).subscribe({
       next: (data) => {
         console.log('✅ Próximo chamado:', data);
-        // Recarregar dados após chamar
         setTimeout(() => this.loadSessionData(), 500);
       },
       error: (err) => {
@@ -149,7 +144,7 @@ export class GiraComponent implements OnInit {
   repeatCall(queueItem: QueueItem): void {
     console.log('🔔 Repetindo chamada:', queueItem.name);
     this.playCallSound();
-    
+
     this.api.repeatCall(queueItem.id).subscribe({
       next: (data) => {
         console.log('✅ Chamada repetida:', data);

@@ -3,7 +3,7 @@ title Labaxurias - Inicializando...
 color 0A
 
 echo ============================================
-echo   LABAXURIAS - Sistema de Gestão
+echo   LABAXURIAS - Macumba da Boa
 echo ============================================
 echo.
 
@@ -18,7 +18,7 @@ if %errorlevel%==0 (
     set /a BACKEND_PORT=%BACKEND_PORT%+1
     goto check_backend
 )
-echo [OK] Backend usará porta: %BACKEND_PORT%
+echo [OK] Backend usara porta: %BACKEND_PORT%
 
 :: ============================
 :: VERIFICAR PORTA DO FRONTEND
@@ -31,10 +31,10 @@ if %errorlevel%==0 (
     set /a FRONTEND_PORT=%FRONTEND_PORT%+1
     goto check_frontend
 )
-echo [OK] Frontend usará porta: %FRONTEND_PORT%
+echo [OK] Frontend usara porta: %FRONTEND_PORT%
 
 echo.
-echo Iniciando serviços em segundo plano...
+echo Iniciando macumba em segundo plano...
 
 :: ============================
 :: INICIAR BACKEND (MINIMIZADO)
@@ -53,7 +53,7 @@ start "Labaxurias-Frontend" /min cmd /k "npx ng serve --port %FRONTEND_PORT% --o
 :: AGUARDAR SUBIDA DOS SERVIÇOS
 :: ============================
 echo.
-echo Aguardando serviços iniciarem (15s)...
+echo Aguardando os spritussss chegarem (15s)...
 timeout /t 15 /nobreak >nul
 
 :: ============================

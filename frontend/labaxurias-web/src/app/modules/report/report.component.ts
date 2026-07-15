@@ -62,16 +62,15 @@ export class ReportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const savedDate = localStorage.getItem('gira_selected_date');
-    if (savedDate) {
-      this.selectedDate = savedDate;
-    } else {
-      const today = new Date();
-      this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
-
-    this.loadReport();
-  }
+  // Sempre usar a data atual ao abrir o sistema
+  const today = new Date();
+  this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  
+  // Salvar no localStorage para manter durante a sessão
+  localStorage.setItem('gira_selected_date', this.selectedDate);
+  
+  this.loadReport();
+}
 
   openCalendar(): void {
     this.dateInput.nativeElement.showPicker();
@@ -465,6 +464,15 @@ export class ReportComponent implements OnInit {
 
   formatDateTime(dateString: string): string {
     if (!dateString) return '-';
+    
+    // Corrige o bug de fuso horário extraindo diretamente a hora e minuto da string
+    // Isso evita que o JavaScript converta para UTC e adicione/subtraia horas
+    const match = dateString.match(/(\d{2}):(\d{2})/);
+    if (match) {
+      return `${match[1]}:${match[2]}`;
+    }
+    
+    // Fallback caso o formato seja diferente
     const date = new Date(dateString);
     return date.toLocaleTimeString('pt-BR', {
       hour: '2-digit',

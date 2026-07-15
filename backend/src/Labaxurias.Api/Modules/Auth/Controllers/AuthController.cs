@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +36,37 @@ public class AuthController : ControllerBase
         return Ok(new { token, role = roles.FirstOrDefault() ?? "User", username = user.UserName });
     }
 
+    [HttpPost("setup-admin")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SetupAdmin()
+    {
+        var serviceProvider = _signInManager.Context.RequestServices;
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+        if (!await roleManager.RoleExistsAsync("Admin"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
+            await roleManager.CreateAsync(new IdentityRole("User"));
+        }
+
+        var adminEmail = "admin@labaxurias.local";
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            adminUser = new IdentityUser { UserName = "admin", Email = adminEmail, EmailConfirmed = true };
+            var result = await userManager.CreateAsync(adminUser, "131658EUliz#");
+            
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+                return Ok(new { message = "✅ Admin criado com sucesso!" });
+            }
+            return BadRequest(new { errors = result.Errors });
+        }
+        
+        return Ok(new { message = "⚠️ Admin já existe." });
+    }
 
     private string GenerateJwtToken(IdentityUser user, IList<string> roles)
     {

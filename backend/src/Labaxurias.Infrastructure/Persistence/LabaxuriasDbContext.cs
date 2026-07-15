@@ -1,9 +1,11 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Labaxurias.Infrastructure.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Labaxurias.Infrastructure.Persistence;
 
-public class LabaxuriasDbContext : DbContext
+public class LabaxuriasDbContext : IdentityDbContext<IdentityUser>
 {
     public LabaxuriasDbContext(DbContextOptions<LabaxuriasDbContext> options)
         : base(options)
@@ -51,3 +53,4 @@ public class LabaxuriasDbContext : DbContext
             .IsRequired(false);
     }
 }
+

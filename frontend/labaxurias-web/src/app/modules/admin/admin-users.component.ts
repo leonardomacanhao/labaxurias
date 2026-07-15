@@ -1,106 +1,162 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
+import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+
+interface User {
+  id: string;
+  userName: string;
+  email: string;
+  roles: string[];
+}
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <div class="admin-container">
-      <div class="header">
-        <h2>⚙️ Gestão de Usuários (Apenas Admin)</h2>
-        <button class="btn-logout" (click)="logout()">Sair</button>
-      </div>
-      <div class="create-user-box">
-        <h3>Criar Novo Usuário</h3>
-        <input [(ngModel)]="newUser.username" placeholder="Nome de usuário" class="input">
-        <input [(ngModel)]="newUser.password" type="password" placeholder="Senha (mín. 8 chars, maiúscula, número, símbolo)" class="input">
-        <button (click)="createUser()" class="btn-add">Criar</button>
-      </div>
-      <table class="users-table">
-        <thead><tr><th>Usuário</th><th>Ações</th></tr></thead>
-        <tbody>
-          @for (user of users; track user.id) {
-            <tr>
-              <td>{{ user.userName }}</td>
-              <td>
-                @if (user.userName !== 'admin') {
-                  <button (click)="resetPassword(user.id)" class="btn-action">Resetar Senha</button>
-                  <button (click)="deleteUser(user.id)" class="btn-delete">Excluir</button>
-                } @else {
-                  <span class="badge">Admin Principal</span>
-                }
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  `,
-  styles: [`
-    .admin-container { padding: 2rem; background: #0a0a0a; min-height: 100vh; color: #fff; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .create-user-box { background: #111; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: flex; gap: 10px; flex-wrap: wrap; }
-    .input { padding: 8px; background: #000; border: 1px solid #444; color: #fff; border-radius: 4px; flex: 1; }
-    .btn-add { padding: 8px 16px; background: #4ade80; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .users-table { width: 100%; border-collapse: collapse; background: #111; }
-    .users-table th, .users-table td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-    .btn-action { background: #3b82f6; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-    .btn-delete { background: #ef4444; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-    .btn-logout { background: #333; color: #fff; border: 1px solid #555; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-    .badge { background: #ff3333; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
-  `]
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  templateUrl: './admin-users.component.html',
+  styleUrl: './admin-users.component.css'
 })
 export class AdminUsersComponent implements OnInit {
-  users: any[] = [];
-  newUser = { username: '', password: '' };
-  private apiUrl = 'http://localhost:5291/api/admin/users';
+  users: User[] = [];
+  loading = false;
 
-  constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
+  showCreateModal = false;
+  showEditModal = false;
+  showDeleteModal = false;
 
-  ngOnInit() {
-    if (!this.authService.isAdmin()) {
-      this.router.navigate(['/gira']);
-    }
+  // CORREÇÃO: Usar PascalCase para combinar com o C#
+  newUser = { UserName: '', Email: '', Password: '', Role: 'User' };
+  editingUser: User | null = null;
+  editingPassword = '';
+  editingRole = 'User';
+  userToDelete: User | null = null;
+
+  constructor(private api: ApiService, private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
     this.loadUsers();
   }
 
-  loadUsers() {
-    this.http.get<any[]>(this.apiUrl).subscribe(data => this.users = data);
-  }
-
-  createUser() {
-    if (!this.newUser.username || !this.newUser.password) return alert('Preencha todos os campos');
-    this.http.post(this.apiUrl, this.newUser).subscribe({
-      next: () => { 
-        alert('Usuário criado com sucesso!'); 
-        this.newUser = { username: '', password: '' }; 
-        this.loadUsers(); 
+  loadUsers(): void {
+    this.loading = true;
+    this.api.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.loading = false;
       },
-      error: (err) => alert('Erro: ' + (err.error?.title || 'Verifique a complexidade da senha'))
+      error: (err) => {
+        console.error('Erro ao carregar usuários:', err);
+        this.loading = false;
+        alert('Erro ao carregar usuários. Verifique o console.');
+      }
     });
   }
 
-  deleteUser(id: string) {
-    if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
-    this.http.delete(`${this.apiUrl}/${id}`).subscribe(() => this.loadUsers());
+  openCreateModal(): void {
+    this.newUser = { UserName: '', Email: '', Password: '', Role: 'User' };
+    this.showCreateModal = true;
   }
 
-  resetPassword(id: string) {
-    const newPass = prompt('Digite a nova senha (mín 8 chars, maiúscula, número, símbolo):');
-    if (!newPass) return;
-    this.http.post(`${this.apiUrl}/${id}/reset-password`, { newPassword: newPass }).subscribe({
-      next: () => alert('Senha alterada com sucesso!'),
-      error: () => alert('Erro ao alterar senha. Verifique as regras de complexidade.')
+  closeCreateModal(): void {
+    this.showCreateModal = false;
+  }
+
+  createUser(): void {
+    if (!this.newUser.UserName || !this.newUser.Password) {
+      alert('Usuário e senha são obrigatórios.');
+      return;
+    }
+
+    this.api.createUser(this.newUser).subscribe({
+      next: () => {
+        this.closeCreateModal();
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Erro ao criar usuário:', err);
+        const errorMsg = err.error?.errors?.[0]?.description || err.error?.title || 'Erro desconhecido';
+        alert('Erro ao criar usuário: ' + errorMsg);
+      }
     });
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  openEditModal(user: User): void {
+    this.editingUser = user;
+    this.editingPassword = '';
+    this.editingRole = user.roles.length > 0 ? user.roles[0] : 'User';
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.editingUser = null;
+  }
+
+  saveEdit(): void {
+    if (!this.editingUser) return;
+
+    const payload: any = {
+      Id: this.editingUser.id,
+      UserName: this.editingUser.userName,
+      Email: this.editingUser.email,
+      Role: this.editingRole
+    };
+
+    if (this.editingPassword) {
+      payload.Password = this.editingPassword;
+    }
+
+    this.api.updateUser(payload).subscribe({
+      next: () => {
+        this.closeEditModal();
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar usuário:', err);
+        alert('Erro ao atualizar usuário.');
+      }
+    });
+  }
+
+  openDeleteModal(user: User): void {
+    this.userToDelete = user;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.userToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) return;
+
+    this.api.deleteUser(this.userToDelete.id).subscribe({
+      next: () => {
+        this.cancelDelete();
+        this.loadUsers();
+      },
+      error: (err) => {
+        console.error('Erro ao excluir usuário:', err);
+        alert('Erro ao excluir usuário.');
+      }
+    });
+  }
+
+  getRoleBadgeClass(role: string): string {
+    return role === 'Admin' ? 'badge-admin' : 'badge-user';
+  }
+
+  logout(): void {
+    if (confirm('Tem certeza que deseja sair?')) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
   }
 }
+
+

@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Labaxurias.Infrastructure.Migrations
 {
     [DbContext(typeof(LabaxuriasDbContext))]
-    [Migration("20260715005718_AddIdentityTables")]
-    partial class AddIdentityTables
+    [Migration("20260715154553_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
             modelBuilder.Entity("Labaxurias.Infrastructure.Domain.Entities.Medium", b =>
                 {

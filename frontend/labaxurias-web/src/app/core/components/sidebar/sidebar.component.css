@@ -1,4 +1,4 @@
-.sidebar {
+﻿.sidebar {
   width: 280px;
   background: #050505;
   color: #fff;
@@ -152,4 +152,24 @@
 .sidebar-footer .menu-item {
   font-size: 0.85rem;
   padding: 1rem 1.5rem;
+}
+
+.logout-btn {
+  color: #ff5555 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+  padding-top: 1rem !important;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 51, 51, 0.15) !important;
+  color: #ff3333 !important;
+}
+
+.logout-btn .icon {
+  color: #ff5555;
+}
+
+.logout-btn:hover .icon {
+  color: #ff3333;
 }
