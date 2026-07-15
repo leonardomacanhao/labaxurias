@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
@@ -85,7 +85,7 @@ export class GiraComponent implements OnInit {
           mediumName: se.mediumName,
           queueItems: se.queueItems.map((qi: any) => ({
             id: qi.id,
-            name: qi.name,
+            name: qi.clientName || qi.name,
             isCalled: qi.isCalled || false,
             calledAt: qi.calledAt || undefined
           }))

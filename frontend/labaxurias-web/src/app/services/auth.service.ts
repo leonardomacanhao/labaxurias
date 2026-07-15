@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
@@ -28,4 +28,9 @@ export class AuthService {
   getRole(): string | null { return localStorage.getItem('role'); }
   isAdmin(): boolean { return this.getRole() === 'Admin'; }
   isLoggedIn(): boolean { return !!this.getToken(); }
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
 }
+

@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SignalrService } from '../../services/signalr';
 import { AttendancePanelComponent } from './components/attendance-panel/attendance-panel.component';
 import { HeaderInfoComponent } from './components/header-info/header-info.component';
@@ -30,10 +30,19 @@ export class PublicScreen implements OnInit {
   ngOnInit(): void {
     this.signalr.startConnection();
 
-    this.signalr.onReceiveCall((data) => {
+    this.signalr.onReceiveCall((data: any) => {
+      console.log('📢 Dados brutos recebidos do SignalR:', data);
+      
       this.ngZone.run(() => {
         this.playCallSound();
-        this.processCall(data.clientName, data.guideName, data.guideId);
+        
+        // Garante que pegamos o nome corretamente, independente de como o backend enviou
+        const clientName = data.clientName || data.name || 'Consulente';
+        const guideName = data.guideName || data.entityName || 'Entidade';
+        const guideId = data.guideId || data.entityId || 'unknown';
+
+        console.log('🔄 Processando chamada com:', { clientName, guideName, guideId });
+        this.processCall(clientName, guideName, guideId);
       });
     });
   }
@@ -49,24 +58,20 @@ export class PublicScreen implements OnInit {
     }
   }
 
-  private processCall(clientName: string, guideName: string, guideId?: string): void {
+  private processCall(clientName: string, guideName: string, guideId: string): void {
     const attendance: QueueItem = {
       uniqueId: `${clientName}_${Date.now()}`,
       name: clientName,
       entityName: guideName,
-      entityId: guideId || 'unknown',
+      entityId: guideId,
       status: 'CHAMADO',
       calledAt: new Date().toISOString()
     };
 
-    if (this.currentAttendance) {
-      this.queueItems = [...this.queueItems, attendance];
-      this.updateNext();
-    } else {
-      this.currentAttendance = attendance;
-      this.updateNext();
-      this.startDisplayTimer();
-    }
+    // Exibe a chamada IMEDIATAMENTE, substituindo a anterior se houver
+    this.currentAttendance = attendance;
+    this.updateNext();
+    this.startDisplayTimer();
 
     this.cdr.detectChanges();
   }
@@ -95,6 +100,6 @@ export class PublicScreen implements OnInit {
           });
         }, 800);
       });
-    }, 7000);
+    }, 7000); // 7 segundos de exibição
   }
 }

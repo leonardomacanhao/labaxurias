@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes, Router } from '@angular/router';
 import { inject } from '@angular/core';
 
 import { PublicScreen } from './modules/public-screen/public-screen';
@@ -13,21 +13,25 @@ import { AdminUsersComponent } from './modules/admin/admin-users.component';
 import { AuthService } from './services/auth.service';
 
 // Guard: exige estar logado
-const authGuard = () => {
+export const authGuard = () => {
   const auth = inject(AuthService);
+  const router = inject(Router);
+  
   if (!auth.isLoggedIn()) {
     console.warn('🔒 Guard: Usuário não logado. Redirecionando para /login');
-    return '/login';
+    return router.createUrlTree(['/login']);
   }
   return true;
 };
 
 // Guard: exige ser Admin
-const adminGuard = () => {
+export const adminGuard = () => {
   const auth = inject(AuthService);
+  const router = inject(Router);
+  
   if (!auth.isAdmin()) {
     console.warn('⛔ Guard: Usuário não é Admin. Redirecionando para /gira');
-    return '/gira';
+    return router.createUrlTree(['/gira']);
   }
   return true;
 };
@@ -49,7 +53,7 @@ export const routes: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
-    canActivate: [authGuard], // <-- PROTEGE TODAS AS ROTAS FILHAS
+    canActivate: [authGuard],
     children: [
       { path: 'gira', component: GiraComponent },
       { path: 'atendimentos', component: AtendimentosComponent },

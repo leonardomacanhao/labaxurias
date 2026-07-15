@@ -64,6 +64,16 @@
   </ul>
 
   <div class="sidebar-footer">
+    <div class="user-info">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21"/>
+        </svg>
+      </span>
+      <span class="label">{{ username }}</span>
+    </div>
+
     <a routerLink="/relatorios" routerLinkActive="active" class="menu-item">
       <span class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +86,8 @@
       </span>
       <span class="label">Relatórios</span>
     </a>
-    <a (click)="logout()" class="menu-item logout-btn">
+
+    <a (click)="openLogoutModal()" class="menu-item logout-btn">
       <span class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -88,3 +99,22 @@
     </a>
   </div>
 </nav>
+
+@if (showLogoutModal) {
+  <div class="modal-overlay" (click)="closeLogoutModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Confirmar Saída</h2>
+        <button type="button" class="modal-close" (click)="closeLogoutModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-text">Tem certeza que deseja sair do sistema?</p>
+        <p class="confirm-warning">Você precisará fazer login novamente para acessar.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeLogoutModal()">Cancelar</button>
+        <button type="button" class="btn-danger" (click)="confirmLogout()">Sair</button>
+      </div>
+    </div>
+  </div>
+}

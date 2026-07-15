@@ -83,7 +83,7 @@ public class AuthController : ControllerBase
             issuer: "LabaxuriasAPI",
             audience: "LabaxuriasClient",
             claims: claims,
-            expires: DateTime.Now.AddHours(8),
+            expires: DateTime.Now.AddHours(24),
             signingCredentials: creds
         );
 
@@ -96,3 +96,4 @@ public class LoginRequest
     public string Username { get; set; } = ""; 
     public string Password { get; set; } = ""; 
 }
+
