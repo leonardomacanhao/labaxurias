@@ -511,3 +511,71 @@
 @media (min-width: 769px) {
   .fab-calendar-cadastro { display: none; }
 }
+
+/* ==========================================================
+   PADRÃO UNIVERSAL DE HEADER MOBILE (Gira, Atendimentos, Cadastros, Relatórios)
+   ========================================================== */
+@media (max-width: 768px) {
+  /* Força o container do header a ter exatamente 48px */
+  app-page-header, .page-header {
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 1rem !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  /* Título sempre no centro, sem quebrar linha */
+  .page-title, app-page-header h1, app-page-header .title {
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    letter-spacing: 1px !important;
+    flex: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
+  }
+
+  /* Ações (Data/Botões) sempre à direita, sem crescer */
+  .header-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-shrink: 0 !important;
+    gap: 0.5rem !important;
+    width: auto !important;
+  }
+
+  /* Esconde elementos desnecessários no mobile para manter os 48px */
+  .date-picker-wrapper, .desktop-only, .desktop-only-subtitle, .subtitle {
+    display: none !important;
+  }
+
+  /* Mostra apenas a badge de data limpa à direita */
+  .mobile-date-display {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-date-display {
+    display: none !important;
+  }
+  .desktop-only, .desktop-only-subtitle {
+    display: inline-block !important;
+    font-size: 0.85rem;
+    color: #888;
+  }
+}
+

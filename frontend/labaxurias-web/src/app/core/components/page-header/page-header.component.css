@@ -8,6 +8,8 @@
   margin-bottom: 2rem;
   background: #000000;
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .page-title {
@@ -53,8 +55,8 @@
 @media (max-width: 768px) {
   .page-header {
     height: 48px;
-    padding: 0 1rem;
-    margin: 1 !important; /* Zera o margin-top e margin-bottom de 32px */
+    padding: 0 0.9rem;
+    margin: 0 !important;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -65,15 +67,17 @@
     font-size: 1rem;
     line-height: 1;
     letter-spacing: 1px;
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: 0;
+    margin: 0 auto;
   }
 
   .page-actions {
+    margin-left: auto;
     flex-shrink: 0;
     justify-content: flex-end;
     align-items: center;

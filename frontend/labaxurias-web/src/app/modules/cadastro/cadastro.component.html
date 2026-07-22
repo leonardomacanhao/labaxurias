@@ -1,9 +1,11 @@
-﻿<app-page-header title="Cadastros">
+<app-page-header title="Cadastros">
   <div class="header-actions">
-    <p class="subtitle"><h1 class="desktop-only-title">Gerenciamento de Médiuns e Entidades</h1>
+    <div class="mobile-date-display">
+      <span>{{ today | date:'dd/MM' }}</span>
+    </div>
+    <span class="desktop-only-subtitle">Gerenciamento de Médiuns e Entidades</span>
   </div>
 </app-page-header>
-
 <div class="tabs">
   <button [class.active]="activeTab === 'medium'" (click)="setTab('medium')">Médiuns</button>
   <button [class.active]="activeTab === 'entidade'" (click)="setTab('entidade')">Entidades</button>

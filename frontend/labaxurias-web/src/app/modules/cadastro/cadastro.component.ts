@@ -18,6 +18,7 @@ import { PageHeaderComponent } from '../../core/components/page-header/page-head
   styleUrl: './cadastro.component.css'
 })
 export class CadastroComponent implements OnInit {
+  readonly today = new Date();
   activeTab: 'medium' | 'entidade' = 'medium';
 
   mediums: Medium[] = [];

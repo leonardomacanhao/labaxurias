@@ -86,7 +86,16 @@ export class ReportComponent implements OnInit {
     this.loadReport();
   }
 
-  async generatePdf(): Promise<void> {
+  handlePrintAction(): void {
+    if (this.activeTab === 'cambones') {
+      this.printCambones();
+      return;
+    }
+
+    this.generatePDF();
+  }
+
+  async generatePDF(): Promise<void> {
     if (!this.reportData || this.reportData.entities.length === 0) {
       alert('Não há dados para gerar o PDF.');
       return;
