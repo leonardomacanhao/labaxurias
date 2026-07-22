@@ -1,8 +1,8 @@
 ﻿.page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Centraliza verticalmente todos os elementos */
-  min-height: 80px; /* Altura mínima, mas flexível */
+  align-items: center;
+  height: 80px;
   padding: 0 2rem;
   border-bottom: 1px solid #222;
   margin-bottom: 2rem;
@@ -11,78 +11,36 @@
 
 .page-title {
   margin: 0;
-  font-size: 1.5rem; /* Tamanho equilibrado */
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: 2px;
   color: #fff;
   text-transform: uppercase;
-  line-height: 1; /* Remove espaço extra vertical */
 }
 
 .page-actions {
   display: flex;
-  align-items: center; /* Centraliza verticalmente */
-  justify-content: flex-end;
+  align-items: center;
   gap: 1rem;
 }
 
-
-/* Responsividade Mobile para o Header - Versão Limpa */
+/* Mobile */
 @media (max-width: 768px) {
   .page-header {
     height: auto;
-    min-height: 60px;
-    padding: 0.8rem 1rem 0.8rem 3.5rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
   }
 
   .page-title {
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 1.2rem;
+    width: 100%;
   }
 
   .page-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  /* Esconder date-picker-wrapper completo no mobile (será substituído por FAB) */
-  .page-actions .date-picker-wrapper {
-    display: none;
-  }
-
-  /* Mostrar apenas a data pequena no canto direito */
-  .page-actions .mobile-date-display {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: rgba(255, 51, 51, 0.1);
-    border: 1px solid rgba(255, 51, 51, 0.3);
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #ff5555;
-    letter-spacing: 0.5px;
-  }
-
-  .page-actions .mobile-date-display svg {
-    width: 12px;
-    height: 12px;
-  }
-}
-
-/* Desktop: esconder mobile-date-display */
-@media (min-width: 769px) {
-  .page-actions .mobile-date-display {
-    display: none;
+    width: 100%;
+    justify-content: space-between;
   }
 }

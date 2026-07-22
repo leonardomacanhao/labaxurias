@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
@@ -9,7 +9,11 @@ import { PageHeaderComponent } from '../../core/components/page-header/page-head
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PageHeaderComponent
+  ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.css'
 })
