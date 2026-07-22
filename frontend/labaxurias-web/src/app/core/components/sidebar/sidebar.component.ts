@@ -1,7 +1,9 @@
-﻿import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { SidebarStateService } from '../../services/sidebar-state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,37 +12,47 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   username: string = 'Usuário';
   showLogoutModal: boolean = false;
   isMobileMenuOpen: boolean = false;
+  private menuSubscription!: Subscription;
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sidebarState: SidebarStateService
   ) {}
 
   ngOnInit(): void {
     this.username = localStorage.getItem('username') || 'Usuário';
+    
+    // Escuta mudanças no estado do menu vindas do header ou de outro lugar
+    this.menuSubscription = this.sidebarState.isMobileMenuOpen$.subscribe(isOpen => {
+      this.isMobileMenuOpen = isOpen;
+      document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : '';
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.menuSubscription) {
+      this.menuSubscription.unsubscribe();
+    }
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any): void {
-    // Fecha menu mobile se redimensionar para desktop
     if (window.innerWidth > 768) {
-      this.isMobileMenuOpen = false;
+      this.sidebarState.setMobileMenuOpen(false);
     }
   }
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    // Previne scroll do body quando menu está aberto
-    document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : '';
+    this.sidebarState.toggleMobileMenu();
   }
 
   closeMobileMenu(): void {
-    this.isMobileMenuOpen = false;
-    document.body.style.overflow = '';
+    this.sidebarState.setMobileMenuOpen(false);
   }
 
   openExternal(path: string): void {

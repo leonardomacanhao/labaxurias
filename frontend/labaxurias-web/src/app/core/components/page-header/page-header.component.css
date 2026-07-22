@@ -1,4 +1,4 @@
-﻿.page-header {
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -6,7 +6,8 @@
   padding: 0 2rem;
   border-bottom: 1px solid #222;
   margin-bottom: 2rem;
-  background: #0a0a0a;
+  background: #000000;
+  position: relative;
 }
 
 .page-title {
@@ -24,23 +25,62 @@
   gap: 1rem;
 }
 
+.hamburger-btn {
+  display: none;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.6rem;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.3s;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  transition: all 0.3s;
+}
+
+.hamburger-btn.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger-btn.active span:nth-child(2) { opacity: 0; }
+.hamburger-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+
 /* Mobile */
 @media (max-width: 768px) {
   .page-header {
-    height: auto;
-    padding: 1rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
+    height: 48px;
+    padding: 0 1rem;
+    margin: 1 !important; /* Zera o margin-top e margin-bottom de 32px */
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .page-title {
-    font-size: 1.2rem;
-    width: 100%;
+    font-size: 1rem;
+    line-height: 1;
+    letter-spacing: 1px;
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
   }
 
   .page-actions {
-    width: 100%;
-    justify-content: space-between;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .hamburger-btn {
+    display: flex;
+    flex-shrink: 0;
   }
 }

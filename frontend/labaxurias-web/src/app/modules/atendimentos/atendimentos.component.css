@@ -484,3 +484,63 @@
   }
 }
 
+
+
+/* ========================================= */
+/* PADRÃO VISUAL DA DATA (IGUAL À TELA GIRA) */
+/* ========================================= */
+
+/* FAB de Calendário - Mobile */
+.fab-calendar {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(255, 51, 51, 0.4);
+  cursor: pointer;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.fab-calendar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5);
+}
+
+/* Mobile: Badge de data limpa e FAB visível */
+@media (max-width: 768px) {
+  .mobile-date-display {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  .date-picker-wrapper {
+    display: none !important;
+  }
+  
+  .fab-calendar {
+    display: flex;
+  }
+}
+
+/* Desktop: Esconder badge e FAB */
+@media (min-width: 769px) {
+  .mobile-date-display {
+    display: none !important;
+  }
+  .fab-calendar {
+    display: none;
+  }
+}
