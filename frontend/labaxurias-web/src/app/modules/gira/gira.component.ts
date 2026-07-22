@@ -1,6 +1,7 @@
 ﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
 import { environment } from '../../../environments/environment';
@@ -25,7 +26,7 @@ interface SessionEntity {
 @Component({
   selector: 'app-gira',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, RouterLink],
   templateUrl: './gira.component.html',
   styleUrl: './gira.component.css'
 })
