@@ -677,6 +677,10 @@
     justify-content: center;
   }
 
+  .header-actions .btn-print {
+    display: none !important;
+  }
+
   .date-picker-wrapper {
     display: inline-flex;
     align-items: center;

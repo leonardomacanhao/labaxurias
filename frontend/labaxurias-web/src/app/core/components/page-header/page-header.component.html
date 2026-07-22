@@ -1,12 +1,15 @@
 <header class="page-header">
-  <!-- Botão Sanduíche (Mobile) -->
   <button class="hamburger-btn" (click)="toggleMenu()" [class.active]="isMenuOpen">
     <span></span>
     <span></span>
     <span></span>
   </button>
 
-  <h1 class="page-title">{{ title }}</h1>
+  <div class="title-stack">
+    <span class="eyebrow">Sessão de trabalho · terreiro</span>
+    <h1 class="page-title">{{ title }}</h1>
+  </div>
+
   <div class="page-actions">
     <ng-content></ng-content>
   </div>

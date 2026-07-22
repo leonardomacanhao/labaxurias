@@ -1,12 +1,27 @@
 .admin-container {
   display: flex;
-  height: 100vh;
-  background: #000;
-  color: #fff;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-base) 0%, #040201 100%);
+  color: var(--text-primary);
 }
 
 .content-area {
   flex: 1;
-  padding: 1rem 2rem 2rem 2rem;
+  padding: 1.25rem 2rem 2.5rem 2rem;
   overflow-y: auto;
+  position: relative;
+}
+
+.content-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(226, 72, 31, 0.10) 0%, transparent 42%);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    padding: 1rem 1rem 5.5rem 1rem;
+  }
 }
