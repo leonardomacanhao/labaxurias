@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
+import { environment } from '../../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 
 interface QueueItem {
@@ -48,14 +49,14 @@ export class GiraComponent implements OnInit {
     // Sempre usar a data atual ao abrir o sistema
     const today = new Date();
     this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
+
     // Salvar no localStorage para manter durante a sessão
     localStorage.setItem('gira_selected_date', this.selectedDate);
 
     this.loadSessionData();
     this.setupSignalR();
 
-    // Recarregar dados quando a janela ganhar foco (usuário volta para a tela)
+    // Recarregar dados quando a janela ganhar foco
     window.addEventListener('focus', () => {
       console.log('🔄 Recarregando dados ao focar na janela');
       this.loadSessionData();
@@ -74,9 +75,11 @@ export class GiraComponent implements OnInit {
 
   loadSessionData(): void {
     console.log('🔄 Carregando dados para data:', this.selectedDate);
+
     this.api.getSessionByDate(this.selectedDate).subscribe({
       next: (data) => {
         console.log('✅ Dados carregados:', data);
+
         this.sessionEntities = data.sessionEntities.map((se: any) => ({
           sessionEntityId: se.sessionEntityId,
           entityId: se.entityId,
@@ -90,6 +93,7 @@ export class GiraComponent implements OnInit {
             calledAt: qi.calledAt || undefined
           }))
         }));
+
         this.cdr.detectChanges();
       },
       error: (err) => console.error('❌ Erro ao carregar sessão:', err)
@@ -98,7 +102,7 @@ export class GiraComponent implements OnInit {
 
   setupSignalR(): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5291/hubs/call')
+      .withUrl(environment.signalRUrl)
       .withAutomaticReconnect()
       .build();
 
@@ -134,6 +138,7 @@ export class GiraComponent implements OnInit {
       },
       error: (err) => {
         console.error('❌ Erro ao chamar próximo:', err);
+
         if (err.status === 404) {
           alert('Não há mais consulentes na fila!');
         }

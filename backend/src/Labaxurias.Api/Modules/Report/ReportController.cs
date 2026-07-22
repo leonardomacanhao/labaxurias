@@ -15,6 +15,14 @@ public class ReportController : ControllerBase
         _db = db;
     }
 
+    private DateTime? ConvertToBrazilTime(DateTime? utcDate)
+    {
+        if (utcDate == null)
+            return null;
+
+        return utcDate.Value.AddHours(-4);
+    }
+
     [HttpGet("attendance/{date}")]
     public async Task<IActionResult> GetAttendanceReport(string date)
     {
@@ -48,8 +56,8 @@ public class ReportController : ControllerBase
                         .Select(qi => new
                         {
                             clientName = qi.ClientName,
-                            calledAt = qi.CalledAt,
-                            createdAt = qi.CreatedAt
+                            calledAt = ConvertToBrazilTime(qi.CalledAt),
+                            createdAt = ConvertToBrazilTime(qi.CreatedAt)
                         })
                 })
         };
@@ -88,9 +96,9 @@ public class ReportController : ControllerBase
                         .Select(qi => new
                         {
                             clientName = qi.ClientName,
-                            createdAt = qi.CreatedAt,
+                            createdAt = ConvertToBrazilTime(qi.CreatedAt),
                             isCalled = qi.IsCalled,
-                            calledAt = qi.CalledAt
+                            calledAt = ConvertToBrazilTime(qi.CalledAt)
                         })
                 })
         };

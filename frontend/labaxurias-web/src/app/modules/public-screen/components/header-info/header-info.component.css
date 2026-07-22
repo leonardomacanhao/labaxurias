@@ -1,59 +1,69 @@
 .header-info {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 1.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-.subtitle {
-  font-size: 1rem;
-  opacity: 0.9;
-  margin: 0;
-  font-weight: 300;
-}
-.header-right {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.date {
-  font-size: 1rem;
-  opacity: 0.9;
-  font-weight: 300;
-  text-transform: capitalize;
-}
-.time {
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-@media (max-width: 768px) {
-  .header-info {
-    flex-direction: column;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: clamp(0.8rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     gap: 1rem;
-    text-align: center;
-  }
-  .header-right {
-    text-align: center;
-  }
-  .title {
-    font-size: 1.5rem;
-  }
-  .time {
-    font-size: 2rem;
-  }
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 1vw, 0.75rem);
+}
+
+.title {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 300;
+}
+
+.header-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.3rem, 1vw, 0.75rem);
+}
+
+.date {
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    opacity: 0.9;
+    font-weight: 300;
+    text-transform: capitalize;
+}
+
+.time {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+
+    .header-info {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .header-left,
+    .header-right {
+        align-items: center;
+        text-align: center;
+    }
+
+    .time {
+        font-size: 2rem;
+    }
 }

@@ -1,4 +1,4 @@
-/* Header Actions */
+﻿/* Header Actions */
 .header-actions {
   display: flex;
   align-items: center;
@@ -210,12 +210,39 @@
 }
 
 /* Date Picker */
-.date-picker-wrapper { display: flex; align-items: center; gap: 1rem; background: #111; padding: 0.8rem 1.5rem; border-radius: 8px; border: 1px solid #333; }
+.date-picker-wrapper { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.8rem; 
+  background: #111; 
+  padding: 0.3rem 1rem; /* Padding vertical reduzido para casar com o título */
+  border-radius: 6px; 
+  border: 1px solid #333; 
+}
 .date-picker-wrapper label { font-size: 0.9rem; opacity: 0.8; font-weight: 600; letter-spacing: 1px; color: #aaa; }
 .date-display { position: relative; display: flex; align-items: center; background: #000; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
 .date-display:hover { border-color: #ff3333; }
-.formatted-date { font-size: 1rem; font-weight: 700; color: #fff; padding: 0.5rem 1rem; min-width: 100px; text-align: center; cursor: pointer; }
-.calendar-icon { display: flex; align-items: center; justify-content: center; padding: 0 0.8rem; background: rgba(255, 51, 51, 0.1); border-left: 1px solid #333; color: #ff3333; cursor: pointer; height: 100%; }
+.formatted-date { 
+  font-size: 0.95rem; 
+  font-weight: 700; 
+  color: #fff; 
+  padding: 0.3rem 0.8rem; /* Padding vertical reduzido */
+  min-width: 85px; 
+  text-align: center; 
+  cursor: pointer; 
+  line-height: 1.2;
+}
+.calendar-icon { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 0 0.6rem; 
+  background: rgba(255, 51, 51, 0.1); 
+  border-left: 1px solid #333; 
+  color: #ff3333; 
+  cursor: pointer; 
+  height: 100%; 
+}
 .date-input-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 /* Consulentes */
 .consulentes-card {
@@ -607,4 +634,174 @@
 .thermal-footer p {
   margin: 0.5mm 0;
   padding: 0;
+}
+/* Responsividade Mobile para Relatórios */
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .btn-pdf, .btn-print {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .date-picker-wrapper { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.8rem; 
+  background: #111; 
+  padding: 0.3rem 1rem; /* Padding vertical reduzido para casar com o título */
+  border-radius: 6px; 
+  border: 1px solid #333; 
+}
+
+  .date-display {
+    width: 100%;
+  }
+
+  .formatted-date { 
+  font-size: 0.95rem; 
+  font-weight: 700; 
+  color: #fff; 
+  padding: 0.3rem 0.8rem; /* Padding vertical reduzido */
+  min-width: 85px; 
+  text-align: center; 
+  cursor: pointer; 
+  line-height: 1.2;
+}
+
+  .tabs {
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .tabs button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    text-align: left;
+  }
+
+  .tabs button.active {
+    border-bottom-color: transparent;
+    border-left-color: #ff3333;
+    background: rgba(255, 51, 51, 0.05);
+  }
+
+  .content-area {
+    padding: 1rem;
+  }
+
+  .summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .entity-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .attendance-item, .consulente-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+
+  .time, .consulente-time {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .cambones-preview {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* FAB de Calendário (aparece apenas no mobile) */
+.fab-calendar {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(255, 51, 51, 0.4);
+  cursor: pointer;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.fab-calendar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5);
+}
+
+.fab-calendar:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .fab-calendar {
+    display: flex;
+  }
+
+  /* Esconder elementos desktop no mobile */
+  .header-actions-desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .header-actions-desktop {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+/* FAB de Calendário (Mobile) */
+.fab-calendar-report {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(255, 51, 51, 0.4);
+  cursor: pointer;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.fab-calendar-report:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5); }
+.fab-calendar-report:active { transform: scale(0.95); }
+
+@media (max-width: 768px) {
+  .fab-calendar-report { display: flex; }
+  .date-picker-wrapper { display: none; }
+  .mobile-date-display { display: flex; }
+}
+@media (min-width: 769px) {
+  .fab-calendar-report { display: none; }
+  .mobile-date-display { display: none; }
 }

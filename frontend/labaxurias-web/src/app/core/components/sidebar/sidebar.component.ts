@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -13,6 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 export class SidebarComponent implements OnInit {
   username: string = 'Usuário';
   showLogoutModal: boolean = false;
+  isMobileMenuOpen: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -21,6 +22,25 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.username = localStorage.getItem('username') || 'Usuário';
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any): void {
+    // Fecha menu mobile se redimensionar para desktop
+    if (window.innerWidth > 768) {
+      this.isMobileMenuOpen = false;
+    }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    // Previne scroll do body quando menu está aberto
+    document.body.style.overflow = this.isMobileMenuOpen ? 'hidden' : '';
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+    document.body.style.overflow = '';
   }
 
   openExternal(path: string): void {
