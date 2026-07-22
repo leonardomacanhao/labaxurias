@@ -6,13 +6,34 @@
   --border-strong: rgba(232, 188, 114, 0.26);
   --ember: #8f2a1c;
   --ember-bright: #e2481f;
+  --ember-glow: rgba(226, 72, 31, 0.3);
   --gold: #c9973f;
   --gold-bright: #f0c581;
+  --gold-glow: rgba(201, 151, 63, 0.3);
   --text-primary: #f3e9d8;
   --text-secondary: #a8927c;
   --text-muted: #6e5a48;
   --radius-sm: 2px;
   --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Marrom expandido para substituir cinzas */
+  --brown-900: #060302;
+  --brown-800: #0e0906;
+  --brown-700: #1a120c;
+  --brown-600: #2a1c12;
+  --brown-500: #3e2a1c;
+  --brown-400: #5a3d28;
+  --brown-300: #7a5538;
+  --brown-200: #a07a4f;
+  --brown-100: #c9a56d;
+  --brown-50: #f0dcc0;
+
+  /* Acento laranja-queimado */
+  --accent: #e2481f;
+  --accent-hover: #b83a18;
+  --accent-dark: #8f2a1c;
+  --accent-light: rgba(226, 72, 31, 0.12);
 }
 
 * {
@@ -67,6 +88,51 @@ h1, h2, h3, h4 {
 
 @keyframes spin-slow {
   to { transform: rotate(360deg); }
+}
+
+/* === NOVAS ANIMAÇÕES DE MOVIMENTO === */
+
+@keyframes shimmer-slide {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--ember-glow); }
+  50% { box-shadow: 0 0 24px var(--ember-glow), 0 0 48px rgba(226, 72, 31, 0.15); }
+}
+
+@keyframes card-sweep {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes border-dance {
+  0%, 100% { border-color: var(--border); }
+  50% { border-color: var(--border-strong); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Utility classes for motion */
+.motion-float {
+  animation: float-y 3s ease-in-out infinite;
+}
+
+.motion-glow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.motion-breathe {
+  animation: breathe 3s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

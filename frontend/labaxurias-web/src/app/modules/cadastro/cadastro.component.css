@@ -2,13 +2,13 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--border);
 }
 
 .tabs button {
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-secondary);
   padding: 1rem 2rem;
   font-size: 1rem;
   font-weight: 600;
@@ -20,12 +20,12 @@
 }
 
 .tabs button:hover {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .tabs button.active {
-  color: #ff3333;
-  border-bottom-color: #ff3333;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .medium-layout, .entity-layout {
@@ -35,8 +35,8 @@
 }
 
 .form-section {
-  background: #0a0a0a;
-  border: 1px solid #222;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 2rem;
 }
@@ -44,7 +44,7 @@
 .form-section h2 {
   margin: 0 0 1.5rem 0;
   font-size: 1.3rem;
-  color: #ff3333;
+  color: var(--accent);
   font-weight: 600;
   letter-spacing: 1px;
 }
@@ -58,25 +58,25 @@
 
 .form-group label {
   font-size: 0.9rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-weight: 600;
   letter-spacing: 1px;
 }
 
 .form-group input, .form-group select {
-  background: #111;
-  border: 1px solid #333;
-  color: #fff;
+  background: var(--bg-elevated);
+  border: 1px solid var(--brown-500);
+  color: var(--text-primary);
   padding: 0.8rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus, .form-group select:focus {
-  border-color: #ff3333;
-  box-shadow: 0 0 0 2px rgba(255, 51, 51, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
 }
 
 .form-actions {
@@ -85,9 +85,9 @@
 }
 
 .btn-save {
-  background: #ff3333;
-  color: #fff;
-  border: 1px solid #ff3333;
+  background: var(--accent);
+  color: var(--text-primary);
+  border: 1px solid var(--accent);
   padding: 0.8rem 1.8rem;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -98,13 +98,15 @@
 }
 
 .btn-save:hover {
-  background: #cc0000;
-  border-color: #cc0000;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--ember-glow);
 }
 
 .list-section {
-  background: #0a0a0a;
-  border: 1px solid #222;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 2rem;
 }
@@ -112,7 +114,7 @@
 .list-section h2 {
   margin: 0 0 1.5rem 0;
   font-size: 1.3rem;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: 600;
   letter-spacing: 1px;
 }
@@ -127,16 +129,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #111;
-  border: 1px solid #222;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem 1.2rem;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .card:hover {
-  background: #161616;
-  border-color: #333;
+  background: var(--brown-600);
+  border-color: var(--brown-400);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 
 .card-info {
@@ -145,7 +149,7 @@
 
 .card-info strong {
   font-size: 1rem;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -157,7 +161,7 @@
 .icon-btn {
   background: transparent;
   border: none;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 4px;
@@ -173,19 +177,19 @@
 }
 
 .icon-btn:hover {
-  background: #222;
-  color: #fff;
+  background: var(--brown-600);
+  color: var(--text-primary);
 }
 
 .icon-btn.delete:hover {
-  background: rgba(255, 50, 50, 0.15);
-  color: #ff5555;
+  background: var(--accent-light);
+  color: var(--accent);
 }
 
 .empty-list {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -193,24 +197,24 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: #0a0a0a;
-  border: 1px solid #222;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
 }
 
 .medium-selector-bar label {
   font-size: 1rem;
-  color: #aaa;
+  color: var(--text-secondary);
   font-weight: 600;
   letter-spacing: 1px;
 }
 
 .medium-selector-bar select {
   flex: 1;
-  background: #111;
-  border: 1px solid #333;
-  color: #fff;
+  background: var(--bg-elevated);
+  border: 1px solid var(--brown-500);
+  color: var(--text-primary);
   padding: 0.8rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
@@ -219,12 +223,12 @@
 }
 
 .medium-selector-bar select:focus {
-  border-color: #ff3333;
+  border-color: var(--accent);
 }
 
 .placeholder-box {
-  background: #0a0a0a;
-  border: 1px solid #222;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 3rem;
   text-align: center;
@@ -233,13 +237,13 @@
 .placeholder-box h2 {
   margin: 0 0 1rem 0;
   font-size: 1.5rem;
-  color: #666;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 .placeholder-box p {
   margin: 0;
-  color: #555;
+  color: var(--brown-400);
   font-size: 1rem;
 }
 
@@ -258,8 +262,8 @@
 }
 
 .modal-content {
-  background: #111;
-  border: 1px solid #333;
+  background: var(--bg-elevated);
+  border: 1px solid var(--brown-500);
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
   width: 500px;
@@ -273,13 +277,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
-  color: #ff3333;
+  color: var(--accent);
   font-weight: 700;
   letter-spacing: 1px;
 }
@@ -287,7 +291,7 @@
 .modal-close {
   background: transparent;
   border: none;
-  color: #aaa;
+  color: var(--text-secondary);
   font-size: 2rem;
   cursor: pointer;
   padding: 0;
@@ -300,7 +304,7 @@
 }
 
 .modal-close:hover {
-  color: #ff3333;
+  color: var(--accent);
 }
 
 .modal-body {
@@ -312,13 +316,13 @@
   gap: 1rem;
   justify-content: flex-end;
   padding: 1.5rem 2rem;
-  border-top: 1px solid #222;
+  border-top: 1px solid var(--border);
 }
 
 .btn-cancel {
-  background: #1a1a1a;
-  color: #fff;
-  border: 1px solid #333;
+  background: var(--brown-700);
+  color: var(--text-primary);
+  border: 1px solid var(--brown-500);
   padding: 0.8rem 1.8rem;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -329,8 +333,8 @@
 }
 
 .btn-cancel:hover {
-  background: #2a2a2a;
-  border-color: #555;
+  background: var(--brown-600);
+  border-color: var(--brown-400);
 }
 
 /* Modal de Confirmação */
@@ -341,30 +345,30 @@
 
 .confirm-text {
   font-size: 1.1rem;
-  color: #ccc;
+  color: var(--text-primary);
   line-height: 1.6;
   margin: 0 0 1rem 0;
 }
 
 .confirm-text strong {
-  color: #ff3333;
+  color: var(--accent);
   font-weight: 700;
 }
 
 .confirm-warning {
   font-size: 0.95rem;
-  color: #ff8888;
+  color: var(--gold);
   margin: 0;
   padding: 0.8rem;
-  background: rgba(255, 51, 51, 0.1);
-  border-left: 3px solid #ff3333;
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
   border-radius: 4px;
 }
 
 .btn-danger {
-  background: #cc0000;
-  color: #fff;
-  border: 1px solid #cc0000;
+  background: var(--accent-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-dark);
   padding: 0.8rem 1.8rem;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -375,8 +379,10 @@
 }
 
 .btn-danger:hover {
-  background: #990000;
-  border-color: #990000;
+  background: #6b1f12;
+  border-color: #6b1f12;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--ember-glow);
 }
 /* Responsividade Mobile */
 @media (max-width: 768px) {
