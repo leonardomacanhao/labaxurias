@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header-info.component.css'
 })
 export class HeaderInfoComponent implements OnInit, OnDestroy {
+  @Input() title: string = 'T.U.C.U.C.J.';
+  @Input() subtitle: string = 'Sistema de Atendimento';
   currentTime: string = '';
   currentDate: string = '';
   private intervalId: number | null = null;

@@ -30,6 +30,12 @@
   </div>
 </app-page-header>
 
+@if (toastMessage) {
+  <div class="toast" [class.success]="toastType === 'success'" [class.error]="toastType === 'error'">
+    {{ toastMessage }}
+  </div>
+}
+
 <div class="content-area">
   @if (selectedEntities.length === 0) {
     <div class="placeholder-message">

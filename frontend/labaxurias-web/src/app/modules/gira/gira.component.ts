@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -24,6 +24,20 @@ interface SessionEntity {
   queueItems: QueueItem[];
 }
 
+interface PublicPanelSettings {
+  headerTitle: string;
+  headerSubtitle: string;
+  brandName: string;
+  logoPath: string;
+  displaySeconds: number;
+  fontFamily: string;
+  textAnimation: string;
+  textColor: string;
+  textSize: number;
+  logoSize: number;
+  recentFontSize: number;
+}
+
 @Component({
   selector: 'app-gira',
   standalone: true,
@@ -31,15 +45,57 @@ interface SessionEntity {
   templateUrl: './gira.component.html',
   styleUrl: './gira.component.css'
 })
-export class GiraComponent implements OnInit {
+export class GiraComponent implements OnInit, OnDestroy {
   @ViewChild('dateInput') dateInput!: ElementRef<HTMLInputElement>;
 
   selectedDate: string = '';
   sessionEntities: SessionEntity[] = [];
   searchTerm: string = '';
   showMobileSearch: boolean = false;
+  isTestingPanel: boolean = false;
+  isPanelSettingsOpen: boolean = false;
+  toastMessage: string = '';
+  toastType: 'success' | 'error' | 'info' = 'info';
+  publicPanelSettings: PublicPanelSettings = {
+    headerTitle: 'T.U.C.U.C.J.',
+    headerSubtitle: 'Sistema de Atendimento',
+    brandName: 'T.U.C.U.C.J.',
+    logoPath: 'logo-tucucj-transparent.png',
+    displaySeconds: 7,
+    fontFamily: 'Cinzel',
+    textAnimation: 'fire',
+    textColor: '#f0c581',
+    textSize: 56,
+    logoSize: 416,
+    recentFontSize: 11
+  };
+  fontOptions = [
+    { value: 'Cinzel', label: 'Cinzel' },
+    { value: 'Manrope', label: 'Manrope' },
+    { value: 'Georgia', label: 'Georgia' },
+    { value: 'Times New Roman', label: 'Times' },
+    { value: 'Trebuchet MS', label: 'Trebuchet' },
+    { value: 'Verdana', label: 'Verdana' }
+  ];
+  animationOptions = [
+    { value: 'fire', label: 'Fogo' },
+    { value: 'ember', label: 'Brasa' },
+    { value: 'pulse', label: 'Pulso' },
+    { value: 'shine', label: 'Brilho' },
+    { value: 'float', label: 'Flutuar' },
+    { value: 'wave', label: 'Onda' },
+    { value: 'breath', label: 'Respirar' },
+    { value: 'spark', label: 'Faiscas' },
+    { value: 'focus', label: 'Foco' },
+    { value: 'still', label: 'Parado' }
+  ];
+
   private hubConnection: signalR.HubConnection | null = null;
   private callSound: HTMLAudioElement;
+  private toastTimeout?: ReturnType<typeof setTimeout>;
+  private readonly focusHandler = () => {
+    this.loadSessionData();
+  };
 
   constructor(
     private api: ApiService,
@@ -54,13 +110,14 @@ export class GiraComponent implements OnInit {
     this.selectedDate = this.datePreference.getSelectedDate();
 
     this.loadSessionData();
+    this.loadPublicPanelSettings();
     this.setupSignalR();
+    window.addEventListener('focus', this.focusHandler);
+  }
 
-    // Recarregar dados quando a janela ganhar foco
-    window.addEventListener('focus', () => {
-      console.log('🔄 Recarregando dados ao focar na janela');
-      this.loadSessionData();
-    });
+  ngOnDestroy(): void {
+    window.removeEventListener('focus', this.focusHandler);
+    this.hubConnection?.stop();
   }
 
   openCalendar(): void {
@@ -68,9 +125,9 @@ export class GiraComponent implements OnInit {
   }
 
   onDateChange(): void {
-    console.log('📅 Data alterada para:', this.selectedDate);
     this.datePreference.setSelectedDate(this.selectedDate);
     this.loadSessionData();
+    this.clearPublicHistory();
   }
 
   get filteredSessionEntities(): SessionEntity[] {
@@ -98,21 +155,9 @@ export class GiraComponent implements OnInit {
     setTimeout(() => document.querySelector<HTMLInputElement>('.mobile-search-panel input')?.focus());
   }
 
-  private normalizeSearch(value: string): string {
-    return (value || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
-  }
-
   loadSessionData(): void {
-    console.log('🔄 Carregando dados para data:', this.selectedDate);
-
     this.api.getSessionByDate(this.selectedDate).subscribe({
       next: (data) => {
-        console.log('✅ Dados carregados:', data);
-
         this.sessionEntities = data.sessionEntities.map((se: any) => ({
           sessionEntityId: se.sessionEntityId,
           entityId: se.entityId,
@@ -129,7 +174,7 @@ export class GiraComponent implements OnInit {
 
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('❌ Erro ao carregar sessão:', err)
+      error: (err) => console.error('Erro ao carregar sessao:', err)
     });
   }
 
@@ -140,56 +185,107 @@ export class GiraComponent implements OnInit {
       .build();
 
     this.hubConnection.start()
-      .then(() => console.log('✅ Conectado ao SignalR'))
-      .catch(err => console.error('❌ Erro ao conectar SignalR:', err));
+      .then(() => {
+        console.log('Conectado ao SignalR');
+      })
+      .catch(err => console.error('Erro ao conectar SignalR:', err));
 
-    this.hubConnection.on('ReceiveCall', (data: any) => {
-      console.log('📢 Chamada recebida:', data);
+    this.hubConnection.on('ReceiveCall', () => {
       this.loadSessionData();
     });
   }
 
-  private playCallSound(): void {
-    try {
-      this.callSound.currentTime = 0;
-      this.callSound.play().catch(err => {
-        console.warn('⚠️ Não foi possível tocar o som:', err.message);
-      });
-    } catch (err) {
-      console.warn('⚠️ Erro ao tocar som:', err);
-    }
-  }
-
   callNext(sessionEntity: SessionEntity): void {
-    console.log('🔔 Chamando próximo da entidade:', sessionEntity.entityName);
     this.playCallSound();
 
     this.api.callNextBySessionEntity(sessionEntity.sessionEntityId).subscribe({
-      next: (data) => {
-        console.log('✅ Próximo chamado:', data);
+      next: () => {
         setTimeout(() => this.loadSessionData(), 500);
       },
       error: (err) => {
-        console.error('❌ Erro ao chamar próximo:', err);
-
+        console.error('Erro ao chamar proximo:', err);
         if (err.status === 404) {
-          alert('Não há mais consulentes na fila!');
+          this.showToast('Nao ha mais consulentes na fila.', 'info');
         }
       }
     });
   }
 
   callQueueItem(queueItem: QueueItem): void {
-    console.log(queueItem.isCalled ? '🔔 Repetindo chamada:' : '🔔 Chamando consulente:', queueItem.name);
     this.playCallSound();
 
     this.api.repeatCall(queueItem.id).subscribe({
-      next: (data) => {
-        console.log('✅ Chamada enviada:', data);
+      next: () => {
         setTimeout(() => this.loadSessionData(), 500);
       },
-      error: (err) => console.error('❌ Erro ao chamar consulente:', err)
+      error: (err) => console.error('Erro ao chamar consulente:', err)
     });
+  }
+
+  testPublicPanel(): void {
+    this.isTestingPanel = true;
+    this.playCallSound();
+
+    const payload = {
+      clientName: 'Teste do Painel',
+      queueItemId: crypto.randomUUID?.() || `${Date.now()}`,
+      guideId: 'test',
+      guideName: 'Entidade de Teste',
+      calledAt: new Date().toISOString(),
+      isTest: true
+    };
+
+    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
+      this.isTestingPanel = false;
+      this.showToast('SignalR ainda nao esta conectado.', 'error');
+      return;
+    }
+
+    this.hubConnection.invoke('SendCall', payload)
+      .then(() => {
+        this.isTestingPanel = false;
+        this.showToast('Teste enviado para o painel publico.', 'success');
+      })
+      .catch((err) => {
+        this.isTestingPanel = false;
+        console.error('Erro ao testar painel publico:', err);
+        this.showToast('Nao foi possivel testar o painel publico.', 'error');
+      });
+  }
+
+  togglePanelSettings(): void {
+    this.isPanelSettingsOpen = !this.isPanelSettingsOpen;
+  }
+
+  savePublicPanelSettings(): void {
+    const settings = this.normalizePublicPanelSettings();
+    this.api.savePublicPanelSettings(settings).subscribe({
+      next: saved => {
+        this.publicPanelSettings = { ...this.publicPanelSettings, ...saved };
+        this.isPanelSettingsOpen = false;
+        this.showToast('Configuracoes do painel publico salvas.', 'success');
+      },
+      error: err => {
+        console.error('Erro ao salvar configuracoes do painel publico:', err);
+        this.showToast('Nao foi possivel salvar as configuracoes do painel.', 'error');
+      }
+    });
+  }
+
+  selectPanelLogo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.publicPanelSettings.logoPath = String(reader.result || this.publicPanelSettings.logoPath);
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
   }
 
   getPendingCount(sessionEntity: SessionEntity): number {
@@ -198,5 +294,78 @@ export class GiraComponent implements OnInit {
 
   getCalledCount(sessionEntity: SessionEntity): number {
     return sessionEntity.queueItems.filter(q => q.isCalled).length;
+  }
+
+  private playCallSound(): void {
+    try {
+      this.callSound.currentTime = 0;
+      this.callSound.play().catch(err => {
+        console.warn('Nao foi possivel tocar o som:', err.message);
+      });
+    } catch (err) {
+      console.warn('Erro ao tocar som:', err);
+    }
+  }
+
+  private clearPublicHistory(): void {
+    if (!this.hubConnection || this.hubConnection.state !== signalR.HubConnectionState.Connected) {
+      return;
+    }
+
+    this.hubConnection.invoke('ClearPublicHistory').catch(err => {
+      console.warn('Nao foi possivel limpar historico da Public:', err);
+    });
+  }
+
+  private showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.cdr.markForCheck();
+
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
+
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage = '';
+      this.cdr.markForCheck();
+    }, 3200);
+  }
+
+  private loadPublicPanelSettings(): void {
+    this.api.getPublicPanelSettings().subscribe({
+      next: settings => {
+        this.publicPanelSettings = { ...this.publicPanelSettings, ...settings };
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Erro ao carregar configuracoes do painel publico:', err)
+    });
+  }
+
+  private normalizePublicPanelSettings(): PublicPanelSettings {
+    this.publicPanelSettings = {
+      ...this.publicPanelSettings,
+      brandName: this.publicPanelSettings.brandName.trim() || 'T.U.C.U.C.J.',
+      headerTitle: this.publicPanelSettings.headerTitle.trim() || 'T.U.C.U.C.J.',
+      headerSubtitle: this.publicPanelSettings.headerSubtitle.trim() || 'Sistema de Atendimento',
+      logoPath: this.publicPanelSettings.logoPath.trim() || 'logo-tucucj-transparent.png',
+      displaySeconds: Math.min(Math.max(Number(this.publicPanelSettings.displaySeconds) || 7, 3), 30),
+      fontFamily: this.publicPanelSettings.fontFamily || 'Cinzel',
+      textAnimation: this.publicPanelSettings.textAnimation || 'fire',
+      textColor: this.publicPanelSettings.textColor || '#f0c581',
+      textSize: Math.min(Math.max(Number(this.publicPanelSettings.textSize) || 56, 24), 120),
+      logoSize: Math.min(Math.max(Number(this.publicPanelSettings.logoSize) || 416, 120), 700),
+      recentFontSize: Math.min(Math.max(Number(this.publicPanelSettings.recentFontSize) || 11, 8), 22)
+    };
+
+    return this.publicPanelSettings;
+  }
+
+  private normalizeSearch(value: string): string {
+    return (value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 }

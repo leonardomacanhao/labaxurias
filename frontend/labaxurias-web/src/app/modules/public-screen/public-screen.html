@@ -1,5 +1,36 @@
 <div class="screen">
-  <app-header-info></app-header-info>
+  <app-header-info [title]="settings.headerTitle" [subtitle]="settings.headerSubtitle"></app-header-info>
+  <div class="panel-toolbar" [class.open]="isToolbarOpen">
+    <button type="button" class="status-toggle" (click)="toggleToolbar()" [title]="audioReady ? statusLabel : 'Ativar som'">
+      <span class="status-dot" [class.connected]="connectionStatus === 'connected'"></span>
+    </button>
+
+    @if (isToolbarOpen) {
+      <div class="toolbar-menu">
+        <span class="connection-pill" [class.connected]="connectionStatus === 'connected'" [class.reconnecting]="connectionStatus === 'reconnecting' || connectionStatus === 'connecting'">
+          <span class="status-dot" [class.connected]="connectionStatus === 'connected'"></span>
+          {{ statusLabel }}
+        </span>
+        <span class="audio-pill" [class.ready]="audioReady">{{ audioReady ? 'Som ativo' : 'Som pendente' }}</span>
+        @if (!audioReady) {
+          <button type="button" class="toolbar-btn sound-btn" (click)="primeAudio()">Ativar som</button>
+        }
+        <button type="button" class="toolbar-btn" (click)="activateTvMode()">Modo TV</button>
+      </div>
+    }
+  </div>
+
+  @if (recentCalls.length > 0) {
+    <div class="recent-calls" [style.--recent-font-size]="settings.recentFontSize + 'px'">
+      <span class="recent-title">Ultimos chamados</span>
+      @for (call of recentCalls; track call.uniqueId) {
+        <div class="recent-call">
+          <strong>{{ call.name }}</strong>
+          <span>{{ call.entityName }}</span>
+        </div>
+      }
+    </div>
+  }
 
   @if (currentAttendance) {
     <app-attendance-panel
@@ -9,8 +40,21 @@
   } @else {
     <div class="waiting-screen">
       <div class="logo-container">
-        <img src="logo-tucucj-transparent.png" alt="T.U.C.U.C.J." class="img-circular logo-image">
-        <div class="logo-text" data-text="T.U.C.U.C.J.">T.U.C.U.C.J.</div>
+        <img
+          [src]="settings.logoPath"
+          [alt]="settings.brandName"
+          class="img-circular logo-image"
+          [style.width.px]="settings.logoSize"
+          [style.height.px]="settings.logoSize">
+        <div
+          class="logo-text"
+          [class]="'logo-text anim-' + settings.textAnimation"
+          [style.font-family]="settings.fontFamily + ', serif'"
+          [style.--brand-color]="settings.textColor"
+          [style.font-size.px]="settings.textSize"
+          [attr.data-text]="settings.brandName">
+          {{ settings.brandName }}
+        </div>
       </div>
     </div>
   }

@@ -1,5 +1,4 @@
 import { Medium } from './medium';
-import { QueueItem } from './queue-item';
 
 export interface Guide {
 
@@ -10,8 +9,6 @@ export interface Guide {
     mediumId: string;
 
     medium?: Medium;
-
-    queue: QueueItem[];
 
     createdAt: string;
 

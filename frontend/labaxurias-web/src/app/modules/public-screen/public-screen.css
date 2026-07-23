@@ -76,11 +76,170 @@ html, body {
     backdrop-filter: none;
 }
 
+.panel-toolbar {
+    position: fixed;
+    bottom: 14px;
+    right: 16px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-toggle {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(240, 197, 129, 0.22);
+    border-radius: 999px;
+    background: rgba(6, 3, 2, 0.62);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar-menu {
+    position: absolute;
+    right: 0;
+    bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.35rem;
+    border: 1px solid rgba(240, 197, 129, 0.18);
+    border-radius: 999px;
+    background: rgba(6, 3, 2, 0.72);
+    backdrop-filter: blur(12px);
+}
+
+.connection-pill,
+.audio-pill,
+.toolbar-btn {
+    border: 1px solid rgba(240, 197, 129, 0.22);
+    background: rgba(14, 9, 6, 0.72);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 0.28rem 0.48rem;
+    font-size: 0.62rem;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+}
+
+.connection-pill,
+.audio-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(226, 72, 31, 0.6);
+}
+
+.status-dot.connected {
+    background: #43c75f;
+    box-shadow: 0 0 12px rgba(67, 199, 95, 0.75);
+}
+
+.connection-pill.connected {
+    color: #baf7c9;
+    border-color: rgba(67, 199, 95, 0.38);
+}
+
+.connection-pill.connected .status-dot {
+    background: #43c75f;
+    box-shadow: 0 0 12px rgba(67, 199, 95, 0.75);
+}
+
+.connection-pill.reconnecting .status-dot {
+    background: var(--gold-bright);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.audio-pill.ready {
+    color: #baf7c9;
+    border-color: rgba(67, 199, 95, 0.32);
+}
+
+.toolbar-btn {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.toolbar-btn:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold);
+}
+
+.recent-calls {
+    position: fixed;
+    left: 16px;
+    right: 72px;
+    bottom: 14px;
+    z-index: 4;
+    min-width: 0;
+    --recent-font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.26rem 0.36rem;
+    border: 1px solid rgba(240, 197, 129, 0.18);
+    border-radius: 999px;
+    background: rgba(6, 3, 2, 0.38);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.recent-title {
+    flex: 0 0 auto;
+    font-size: calc(var(--recent-font-size) * 0.72);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.recent-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 0.18rem 0.32rem;
+    border-radius: 999px;
+    background: rgba(240, 197, 129, 0.06);
+}
+
+.recent-call strong {
+    color: var(--gold-bright);
+    font-size: var(--recent-font-size);
+    max-width: 48%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recent-call span {
+    color: var(--text-secondary);
+    font-size: calc(var(--recent-font-size) * 0.86);
+    max-width: 42%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .logo-image {
-    width: clamp(180px, 25vw, 416px) !important;
-    height: clamp(180px, 25vw, 416px) !important;
+    width: clamp(120px, 25vw, 700px);
+    height: clamp(120px, 25vw, 700px);
     max-width: 90vw;
-    object-fit: contain !important;
+    max-height: 58vh;
+    object-fit: contain;
     border-radius: 50%;
     background: transparent;
     filter:
@@ -92,11 +251,12 @@ html, body {
 .logo-text {
     font-family: 'Cinzel', serif;
     position: relative;
-    font-size: clamp(28px, 4vw, 56px);
+    font-size: clamp(24px, 4vw, 120px);
     font-weight: 700;
     letter-spacing: clamp(4px, 1vw, 14px);
     text-transform: uppercase;
-    background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 42%, var(--ember-bright) 100%);
+    --brand-color: var(--gold-bright);
+    background: linear-gradient(135deg, var(--brand-color) 0%, var(--gold) 48%, var(--ember-bright) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -123,16 +283,56 @@ html, body {
     filter: blur(9px);
     transform-origin: center bottom;
     pointer-events: none;
+    display: none;
 }
 
-.logo-text::before {
+.logo-text.anim-fire::before {
+    display: block;
     animation: letterFlameRise 3.8s ease-in-out infinite;
 }
 
-.logo-text::after {
+.logo-text.anim-fire::after {
+    display: block;
     animation: letterFlameRise 5.2s ease-in-out infinite reverse;
     filter: blur(16px);
     opacity: 0.72;
+}
+
+.logo-text.anim-ember {
+    animation: emberGlow 3.2s ease-in-out infinite;
+}
+
+.logo-text.anim-pulse {
+    animation: textPulse 2.6s ease-in-out infinite;
+}
+
+.logo-text.anim-shine {
+    background-size: 220% auto;
+    animation: textShine 3s linear infinite;
+}
+
+.logo-text.anim-float {
+    animation: textFloat 4s ease-in-out infinite;
+}
+
+.logo-text.anim-wave {
+    animation: textWave 3.4s ease-in-out infinite;
+}
+
+.logo-text.anim-breath {
+    animation: textBreath 4.5s ease-in-out infinite;
+}
+
+.logo-text.anim-spark {
+    animation: sparkGlow 2.4s steps(2, end) infinite;
+}
+
+.logo-text.anim-focus {
+    animation: textFocus 5s ease-in-out infinite;
+}
+
+.logo-text.anim-still {
+    animation: none;
 }
 
 @keyframes fadeInSlow {
@@ -167,12 +367,104 @@ html, body {
     }
 }
 
+@keyframes emberGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(226, 72, 31, 0.3)); }
+    50% { filter: drop-shadow(0 0 34px rgba(255, 141, 70, 0.72)); }
+}
+
+@keyframes textPulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 18px rgba(226, 72, 31, 0.22); }
+    50% { transform: scale(1.045); text-shadow: 0 0 34px rgba(240, 197, 129, 0.4); }
+}
+
+@keyframes textShine {
+    0% { background-position: 180% center; }
+    100% { background-position: -180% center; }
+}
+
+@keyframes textFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes textWave {
+    0%, 100% { transform: skewX(0deg) translateY(0); }
+    30% { transform: skewX(-3deg) translateY(-5px); }
+    65% { transform: skewX(3deg) translateY(4px); }
+}
+
+@keyframes textBreath {
+    0%, 100% { opacity: 0.82; filter: saturate(1); }
+    50% { opacity: 1; filter: saturate(1.35) brightness(1.15); }
+}
+
+@keyframes sparkGlow {
+    0%, 100% { text-shadow: 0 0 14px rgba(226, 72, 31, 0.22), 18px -12px 18px transparent; }
+    50% { text-shadow: 0 0 28px rgba(255, 221, 149, 0.46), -16px -18px 12px rgba(226, 72, 31, 0.28); }
+}
+
+@keyframes textFocus {
+    0%, 100% { filter: blur(0) brightness(1); letter-spacing: clamp(4px, 1vw, 14px); }
+    50% { filter: blur(1px) brightness(1.22); letter-spacing: clamp(6px, 1.2vw, 18px); }
+}
+
 /* Imagem circular para mascarar o fundo */
 .img-circular {
   border-radius: 50% !important;
-  width: clamp(180px, 25vw, 416px) !important;
-  height: clamp(180px, 25vw, 416px) !important;
-  object-fit: contain !important;
+  object-fit: contain;
   display: block;
   margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .panel-toolbar {
+        bottom: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+
+    .status-toggle {
+        width: 22px;
+        height: 22px;
+    }
+
+    .toolbar-menu {
+        bottom: 28px;
+        gap: 4px;
+    }
+
+    .connection-pill,
+    .audio-pill {
+        font-size: 0.58rem;
+    }
+
+    .toolbar-btn {
+        height: 24px;
+        padding: 0 0.38rem;
+        font-size: 0.58rem;
+    }
+
+    .icon-btn {
+        width: 24px;
+        padding: 0;
+    }
+
+    .recent-calls {
+        left: 10px;
+        right: 46px;
+        bottom: 10px;
+        padding: 0.22rem 0.3rem;
+    }
+
+    .recent-title {
+        display: none;
+    }
+
+    .recent-call strong {
+        max-width: 54px;
+    }
+
+    .recent-call span {
+        display: none;
+    }
 }

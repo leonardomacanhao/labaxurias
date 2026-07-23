@@ -21,7 +21,24 @@ public class CallController : ControllerBase
         _hub = hub;
     }
 
-    // Chamar próximo da fila de uma SessionEntity
+    [HttpPost("test")]
+    public async Task<IActionResult> TestCall()
+    {
+        var payload = new
+        {
+            clientName = "Teste do Painel",
+            queueItemId = Guid.NewGuid(),
+            guideId = Guid.NewGuid(),
+            guideName = "Entidade de Teste",
+            calledAt = DateTime.UtcNow,
+            isTest = true
+        };
+
+        await _hub.Clients.All.SendAsync("ReceiveCall", payload);
+
+        return Ok(payload);
+    }
+
     [HttpPost("session-entity/{sessionEntityId}")]
     public async Task<IActionResult> CallNextBySessionEntity(Guid sessionEntityId)
     {
@@ -32,7 +49,7 @@ public class CallController : ControllerBase
 
         if (sessionEntity == null)
         {
-            return NotFound(new { message = "Entidade não encontrada" });
+            return NotFound(new { message = "Entidade nao encontrada" });
         }
 
         var next = sessionEntity.QueueItems
@@ -65,7 +82,6 @@ public class CallController : ControllerBase
         return Ok(payload);
     }
 
-    // Repetir chamada de um consulente específico
     [HttpPost("queue-item/{queueItemId}")]
     public async Task<IActionResult> RepeatCall(Guid queueItemId)
     {
@@ -76,7 +92,7 @@ public class CallController : ControllerBase
 
         if (queueItem == null)
         {
-            return NotFound(new { message = "Consulente não encontrado" });
+            return NotFound(new { message = "Consulente nao encontrado" });
         }
 
         if (!queueItem.IsCalled)
@@ -101,7 +117,6 @@ public class CallController : ControllerBase
         return Ok(payload);
     }
 
-    // Manter endpoint antigo para compatibilidade
     [HttpPost("{guideId}")]
     public async Task<IActionResult> CallNext(Guid guideId)
     {

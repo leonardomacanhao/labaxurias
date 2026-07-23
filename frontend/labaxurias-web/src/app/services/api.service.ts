@@ -109,6 +109,22 @@ export class ApiService {
     );
   }
 
+  testPublicPanel(): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/attendance/call/test`,
+      {},
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getPublicPanelSettings(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/public-panel/settings`);
+  }
+
+  savePublicPanelSettings(data: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/public-panel/settings`, data, { headers: this.getHeaders() });
+  }
+
   // =========================
   // Sessions
   // =========================

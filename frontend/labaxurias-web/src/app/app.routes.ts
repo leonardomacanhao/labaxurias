@@ -2,7 +2,6 @@
 import { inject } from '@angular/core';
 
 import { PublicScreen } from './modules/public-screen/public-screen.component';
-import { Settings } from './modules/settings/settings';
 import { AdminLayoutComponent } from './core/components/admin-layout/admin-layout.component';
 import { CadastroComponent } from './modules/cadastro/cadastro.component';
 import { AtendimentosComponent } from './modules/atendimentos/atendimentos.component';
@@ -57,7 +56,6 @@ export const routes: Routes = [
     children: [
       { path: 'gira', component: GiraComponent },
       { path: 'atendimentos', component: AtendimentosComponent },
-      { path: 'settings', component: Settings },
       { path: 'cadastros', component: CadastroComponent },
       { path: 'relatorios', component: ReportComponent },
       { path: '', redirectTo: 'gira', pathMatch: 'full' }

@@ -58,6 +58,9 @@ export class AtendimentosComponent implements OnInit {
   removeEntityAction: 'transfer' | 'delete' | null = null;
   showConfirmRemoveEmptyModal: boolean = false;
   entityToRemoveEmpty: SelectedEntity | null = null;
+  toastMessage: string = '';
+  toastType: 'success' | 'error' | 'info' = 'info';
+  private toastTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private api: ApiService,
@@ -140,7 +143,10 @@ export class AtendimentosComponent implements OnInit {
 
   confirmMediumSelection(): void {
     console.log('✅ Confirmando seleção de médiuns:', this.selectedMediumIds.size);
-    if (this.selectedMediumIds.size === 0) return alert('Selecione pelo menos um médium!');
+    if (this.selectedMediumIds.size === 0) {
+      this.showToast('Selecione pelo menos um médium.', 'info');
+      return;
+    }
     this.loadEntitiesForSelectedMediums();
   }
 
@@ -197,7 +203,10 @@ export class AtendimentosComponent implements OnInit {
   confirmEntitySelection(): void {
     console.log('✅ Adicionando entidades ao hall:', this.selectedEntityIds.size);
     
-    if (this.selectedEntityIds.size === 0) return alert('Selecione pelo menos uma entidade!');
+    if (this.selectedEntityIds.size === 0) {
+      this.showToast('Selecione pelo menos uma entidade.', 'info');
+      return;
+    }
     
     const newEnts: SelectedEntity[] = [];
     this.mediumsWithEntities.forEach(m => m.entities.forEach(e => {
@@ -341,11 +350,11 @@ export class AtendimentosComponent implements OnInit {
       this.transferItem = null;
       this.saveSession();
       
-      alert(`Consulente "${this.transferItem!.name}" transferido para ${targetEntity.entityName}!`);
+      this.showToast(`Consulente transferido para ${targetEntity.entityName}.`, 'success');
     } else {
       const sourceQueue = this.entityQueues[this.activeEntity.entityId] || [];
       if (sourceQueue.length === 0) {
-        alert('Não há consulentes para transferir!');
+        this.showToast('Não há consulentes para transferir.', 'info');
         return;
       }
       
@@ -356,7 +365,7 @@ export class AtendimentosComponent implements OnInit {
       this.transferTargetEntityId = null;
       this.saveSession();
       
-      alert(`Todos os consulentes transferidos para ${targetEntity.entityName}!`);
+      this.showToast(`Consulentes transferidos para ${targetEntity.entityName}.`, 'success');
     }
   }
 
@@ -380,7 +389,7 @@ export class AtendimentosComponent implements OnInit {
     }
     
     const newQueueItem: QueueItem = {
-      id: crypto.randomUUID(),
+      id: this.createClientId(),
       name: this.newConsulenteName.trim()
     };
     
@@ -459,7 +468,32 @@ export class AtendimentosComponent implements OnInit {
         console.error('❌ ERRO AO SALVAR SESSÃO:', err);
         console.error('Status:', err.status);
         console.error('Mensagem:', err.message);
+        this.showToast('Não foi possível salvar. Verifique sua conexão e tente novamente.', 'error');
       }
     });
+  }
+
+  private createClientId(): string {
+    if (globalThis.crypto?.randomUUID) {
+      return globalThis.crypto.randomUUID();
+    }
+
+    const randomPart = Math.random().toString(36).slice(2, 10);
+    return `local-${Date.now().toString(36)}-${randomPart}`;
+  }
+
+  private showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.cdr.detectChanges();
+
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+    }
+
+    this.toastTimeout = setTimeout(() => {
+      this.toastMessage = '';
+      this.cdr.detectChanges();
+    }, 3200);
   }
 }
