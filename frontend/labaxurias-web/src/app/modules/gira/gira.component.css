@@ -103,17 +103,17 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: var(--text-primary);
     border: none;
-    box-shadow: 0 4px 12px rgba(255, 51, 51, 0.4);
+    box-shadow: 0 4px 16px var(--ember-glow);
     cursor: pointer;
     z-index: 100;
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
   }
-  .fab-calendar:hover { transform: scale(1.1); box-shadow: 0 6px 16px rgba(255, 51, 51, 0.5); }
+  .fab-calendar:hover { transform: scale(1.1); box-shadow: 0 6px 24px var(--ember-glow); }
 }
 
 /* Desktop: Garante que badge e FAB fiquem escondidos */

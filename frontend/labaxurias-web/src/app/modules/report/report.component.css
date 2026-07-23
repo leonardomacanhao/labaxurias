@@ -455,7 +455,7 @@
 }
 
 .cambones-info svg {
-  color: #ff3333;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -915,7 +915,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: motion-glow 2.4s ease-in-out infinite;
+  animation: glow-pulse 2.4s ease-in-out infinite;
   transition: all 0.3s;
 }
 .fab-print:hover {
@@ -965,44 +965,17 @@
   }
 }
 
-
 /* ========================================= */
-/* CORREÇÃO: Ordem e alinhamento no Desktop  */
+/* BOTÃO IMPRIMIR VISÍVEL NO DESKTOP         */
 /* ========================================= */
 @media (min-width: 769px) {
-  .header-actions {
-    display: flex !important;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  /* Botão de imprimir visível no desktop */
+  .header-actions .btn-print,
+  .page-actions .btn-print,
   .btn-print {
-    display: flex !important;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     order: 1;
-  }
-
-  .btn-pdf {
-    display: flex !important;
-    order: 1;
-  }
-
-  /* Campo de data vem depois (mais à direita) */
-  .date-picker-wrapper {
-    order: 2;
-    margin-left: auto !important; /* Empurra para a direita */
-    padding: 0.6rem 1.2rem !important;
-    min-width: 220px !important;
-  }
-
-  .formatted-date {
-    min-width: 100px !important;
-    font-size: 1rem !important;
-  }
-
-  /* Esconder badge no desktop */
-  .mobile-date-display {
-    display: none !important;
   }
 }
 

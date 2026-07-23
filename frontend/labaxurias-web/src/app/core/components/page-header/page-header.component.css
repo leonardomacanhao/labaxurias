@@ -44,6 +44,10 @@
   gap: 0.8rem;
 }
 
+.page-actions > * {
+  align-self: center;
+}
+
 .hamburger-btn {
   display: none;
   background: transparent;
