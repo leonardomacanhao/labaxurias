@@ -1,37 +1,32 @@
 <app-page-header title="Relatórios">
-  <div class="header-actions">
-    @if (activeTab === 'cambones') {
-      <button class="btn-print" type="button" (click)="handlePrintAction()" [disabled]="loading">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 6 3 18 3 18 9"/>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-          <rect x="6" y="13" width="12" height="8" rx="1"/>
-        </svg>
-        <span>Imprimir</span>
-      </button>
+  <div class="header-actions-desktop">
+    @if (activeTab === 'attendance' || activeTab === 'consulentes') {
+      <button class="header-action-btn" (click)="generatePDF()" [disabled]="loading">PDF</button>
     }
-
-<div class="mobile-date-display">
-      <span>{{ selectedDate | date:'dd/MM' }}</span>
-    </div>
-
+    @if (activeTab === 'cambones') {
+      <button class="header-action-btn" (click)="printCambones()" [disabled]="loading">Imprimir</button>
+    }
     <div class="date-picker-wrapper">
       <label>Data:</label>
       <div class="date-display" (click)="openCalendar()">
         <span class="formatted-date">{{ selectedDate | date:'dd/MM/yyyy' }}</span>
         <span class="calendar-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2"/>
             <line x1="16" y1="2" x2="16" y2="6"/>
             <line x1="8" y1="2" x2="8" y2="6"/>
             <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         </span>
-        <input #dateInput type="date" [(ngModel)]="selectedDate" (input)="onDateChange()" (keydown)="$event.preventDefault()" class="date-input-hidden">
       </div>
     </div>
   </div>
+  <div class="mobile-date-display" (click)="openCalendar()">
+    <span>{{ selectedDate | date:'dd/MM' }}</span>
+  </div>
 </app-page-header>
+
+<input type="date" #dateInput [(ngModel)]="selectedDate" (change)="onDateChange()" style="position:fixed;top:-9999px;left:-9999px;opacity:0;width:1px;height:1px;pointer-events:none;" />
 
 <div class="tabs">
   <button [class.active]="activeTab === 'attendance'" (click)="setTab('attendance')">Atendimentos</button>
@@ -131,14 +126,13 @@
         </div>
       </div>
     }
-    } @else if (activeTab === 'cambones') {
+  } @else if (activeTab === 'cambones') {
     @if (cambonesData.length === 0) {
       <div class="empty-state">
         <h2>Nenhuma entidade cadastrada</h2>
         <p>Não há registros para a data selecionada.</p>
       </div>
     } @else {
-      <!-- Versão visual na tela -->
       <div class="cambones-screen-view">
         <div class="cambones-info">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -168,38 +162,10 @@
           }
         </div>
       </div>
-
-      <!-- Versão para impressão (térmica 80mm) -->
-      <div class="cambones-print-area" id="cambonesPrintArea">
-        <div class="thermal-header">
-          <h1>LISTA DE CONSULENTES</h1>
-          <p>Data: {{ selectedDate | date:'dd/MM/yyyy' }}</p>
-        </div>
-        <div class="thermal-divider"></div>
-
-        @for (entity of cambonesData; track entity.entityName) {
-          <div class="thermal-entity">
-            <div class="thermal-entity-header">
-              <strong>{{ entity.entityName }}</strong>
-              <span>{{ entity.mediumName }}</span>
-            </div>
-            <div class="thermal-divider thin"></div>
-            <ol class="thermal-list">
-              @for (consulente of entity.consulentes; track consulente; let i = $index) {
-                <li>{{ (i + 1).toString().padStart(2, '0') }}. {{ consulente }}</li>
-              }
-            </ol>
-            <div class="thermal-divider"></div>
-          </div>
-        }
-
-        <div class="thermal-footer">
-          <p>Total de entidades: {{ cambonesData.length }}</p>
-          <p>Total de consulentes: {{ getTotalCambonesConsulentes() }}</p>
-        </div>
-      </div>
     }
   }
+</div>
+
 <!-- FAB de Impressão (Mobile) -->
 <button class="fab-print" (click)="handlePrintAction()" [disabled]="loading" title="Gerar PDF">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -218,9 +184,3 @@
     <line x1="3" y1="10" x2="21" y2="10"/>
   </svg>
 </button>
-
-
-
-
-
-

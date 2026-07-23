@@ -1,19 +1,18 @@
 <app-page-header title="Cadastros">
-  <div class="header-actions">
-    <div class="mobile-date-display">
-      <span>{{ today | date:'dd/MM' }}</span>
-    </div>
-    <span class="desktop-only-subtitle">Gerenciamento de Médiuns e Entidades</span>
+  <div class="header-actions-desktop">
+    <span class="desktop-subtitle">Gerenciamento de Médiuns e Entidades</span>
+  </div>
+  <div class="mobile-date-display">
+    <span>Cadastros</span>
   </div>
 </app-page-header>
+
 <div class="tabs">
   <button [class.active]="activeTab === 'medium'" (click)="setTab('medium')">Médiuns</button>
   <button [class.active]="activeTab === 'entidade'" (click)="setTab('entidade')">Entidades</button>
 </div>
 
 <div class="tab-content">
-
-  <!-- ABA MÉDIUNS -->
   @if (activeTab === 'medium') {
     <div class="medium-layout">
       <div class="form-section">
@@ -58,7 +57,6 @@
     </div>
   }
 
-  <!-- ABA ENTIDADES -->
   @if (activeTab === 'entidade') {
     <div class="entity-layout">
       <div class="medium-selector-bar">
@@ -121,10 +119,8 @@
       }
     </div>
   }
-
 </div>
 
-<!-- Modal de Edição de Médium -->
 @if (showEditMediumModal) {
   <div class="modal-overlay" (click)="closeEditMediumModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
@@ -146,7 +142,6 @@
   </div>
 }
 
-<!-- Modal de Edição de Entidade -->
 @if (showEditEntityModal) {
   <div class="modal-overlay" (click)="closeEditEntityModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
@@ -168,7 +163,6 @@
   </div>
 }
 
-<!-- Modal de Confirmação de Exclusão -->
 @if (showDeleteConfirmModal && itemToDelete) {
   <div class="modal-overlay" (click)="cancelDelete()">
     <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
@@ -191,8 +185,3 @@
     </div>
   </div>
 }
-
-
-
-
-

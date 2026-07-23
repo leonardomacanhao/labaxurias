@@ -1,5 +1,5 @@
-﻿<app-page-header title="Atendimentos">
-  <div class="header-actions">
+<app-page-header title="Atendimentos">
+  <div class="header-actions-desktop">
     <button class="btn-add-entity header-btn" (click)="openMediumModal()" title="Adicionar entidade">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -9,9 +9,6 @@
       </svg>
       <span>Adicionar entidade</span>
     </button>
-    <div class="mobile-date-display">
-      <span>{{ selectedDate | date:'dd/MM' }}</span>
-    </div>
     <div class="date-picker-wrapper">
       <label>Data:</label>
       <div class="date-display" (click)="openCalendar()">
@@ -27,6 +24,9 @@
         <input #dateInput type="date" [(ngModel)]="selectedDate" (input)="onDateChange()" (keydown)="$event.preventDefault()" class="date-input-hidden">
       </div>
     </div>
+  </div>
+  <div class="mobile-date-display">
+    <span>{{ selectedDate | date:'dd/MM' }}</span>
   </div>
 </app-page-header>
 
@@ -61,7 +61,6 @@
   }
 </div>
 
-<!-- Modal de Fila -->
 @if (activeEntity) {
   <div class="modal-overlay" (click)="closeEntityQueueModal()">
     <div class="modal-content queue-modal" (click)="$event.stopPropagation()">
@@ -222,11 +221,7 @@
     <div class="modal-content transfer-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>
-          @if (transferItem) {
-            Transferir Consulente
-          } @else {
-            Transferir Todos os Consulentes
-          }
+          @if (transferItem) { Transferir Consulente } @else { Transferir Todos os Consulentes }
         </h2>
         <button class="modal-close" (click)="closeTransferModal()">×</button>
       </div>
@@ -354,8 +349,7 @@
   </svg>
 </button>
 
-
-<!-- FAB de Calendário (Mobile - Rodapé Direito) -->
+<!-- FAB de Calendário (Mobile) -->
 <button class="fab-calendar" (click)="openCalendar()" title="Alterar data">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="3" y="4" width="18" height="18" rx="2"/>
