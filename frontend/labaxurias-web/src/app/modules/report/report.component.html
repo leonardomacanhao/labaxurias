@@ -8,7 +8,7 @@
     }
     <div class="date-picker-wrapper">
       <label>Data:</label>
-      <div class="date-display" (click)="openCalendar()">
+      <div class="date-display" (click)="openCalendar($event)">
         <span class="formatted-date">{{ selectedDate | date:'dd/MM/yyyy' }}</span>
         <span class="calendar-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -21,7 +21,7 @@
       </div>
     </div>
   </div>
-  <div class="mobile-date-display" (click)="openCalendar()">
+  <div class="mobile-date-display" (click)="openCalendar($event)">
     <span>{{ selectedDate | date:'dd/MM' }}</span>
   </div>
 </app-page-header>
@@ -176,7 +176,7 @@
 </button>
 
 <!-- FAB de Calendário (Mobile) -->
-<button class="fab-calendar" (click)="openCalendar()" title="Alterar data">
+<button class="fab-calendar" (click)="openCalendar($event)" title="Alterar data">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="3" y="4" width="18" height="18" rx="2"/>
     <line x1="16" y1="2" x2="16" y2="6"/>

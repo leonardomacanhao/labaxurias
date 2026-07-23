@@ -370,12 +370,28 @@ export class AtendimentosComponent implements OnInit {
 
   addConsulente(): void {
     console.log('➕ Adicionando consulente:', this.newConsulenteName);
-    if (!this.newConsulenteName.trim() || !this.activeEntity) return;
-    this.entityQueues[this.activeEntity.entityId].push({
+    if (!this.newConsulenteName.trim() || !this.activeEntity) {
+      console.warn('⚠️ Dados inválidos:', { name: this.newConsulenteName, activeEntity: this.activeEntity });
+      return;
+    }
+    
+    const entityId = this.activeEntity.entityId;
+    if (!this.entityQueues[entityId]) {
+      console.log('📋 Inicializando fila para entidade:', entityId);
+      this.entityQueues[entityId] = [];
+    }
+    
+    const newQueueItem: QueueItem = {
       id: crypto.randomUUID(),
       name: this.newConsulenteName.trim()
-    });
+    };
+    
+    this.entityQueues[entityId].push(newQueueItem);
+    console.log('✅ Consulente adicionado:', newQueueItem);
+    console.log('📊 Fila atual:', this.entityQueues[entityId]);
+    
     this.newConsulenteName = '';
+    this.cdr.detectChanges();
     this.saveSession();
   }
 

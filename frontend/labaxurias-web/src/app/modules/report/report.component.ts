@@ -68,8 +68,46 @@ export class ReportComponent implements OnInit {
     this.loadReport();
   }
 
-  openCalendar(): void {
-    this.dateInput.nativeElement.showPicker();
+  openCalendar(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = this.selectedDate;
+    
+    // Calcular posição para ficar dentro da viewport
+    let top = rect.bottom + 5;
+    let left = rect.left;
+    
+    // Se estiver muito embaixo, abrir para cima
+    if (top + 300 > window.innerHeight) {
+      top = rect.top - 300;
+    }
+    
+    // Se estiver muito à direita, ajustar
+    if (left + 280 > window.innerWidth) {
+      left = window.innerWidth - 290;
+    }
+    
+    // Garantir que não fique negativo
+    if (top < 10) top = 10;
+    if (left < 10) left = 10;
+    
+    input.style.cssText = `position:fixed;top:${top}px;left:${left}px;opacity:0;z-index:9999;width:1px;height:1px;`;
+    document.body.appendChild(input);
+    input.focus();
+    input.showPicker();
+    
+    input.addEventListener('change', () => {
+      this.selectedDate = input.value;
+      this.onDateChange();
+      document.body.removeChild(input);
+    });
+    
+    input.addEventListener('blur', () => {
+      setTimeout(() => { if (document.body.contains(input)) document.body.removeChild(input); }, 300);
+    });
   }
 
   onDateChange(): void {
