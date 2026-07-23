@@ -1,7 +1,7 @@
 ﻿import { Routes, Router } from '@angular/router';
 import { inject } from '@angular/core';
 
-import { PublicScreen } from './modules/public-screen/public-screen';
+import { PublicScreen } from './modules/public-screen/public-screen.component';
 import { Settings } from './modules/settings/settings';
 import { AdminLayoutComponent } from './core/components/admin-layout/admin-layout.component';
 import { CadastroComponent } from './modules/cadastro/cadastro.component';

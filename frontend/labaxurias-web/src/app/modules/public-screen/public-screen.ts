@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SignalrService } from '../../services/signalr';
 import { AttendancePanelComponent } from './components/attendance-panel/attendance-panel.component';
 import { HeaderInfoComponent } from './components/header-info/header-info.component';
@@ -11,12 +11,13 @@ import { QueueItem } from './models/queue-item.model';
   templateUrl: './public-screen.html',
   styleUrl: './public-screen.css',
 })
-export class PublicScreen implements OnInit {
+export class PublicScreen implements OnInit, OnDestroy {
   currentAttendance: QueueItem | null = null;
   nextInQueue: QueueItem | null = null;
   private queueItems: QueueItem[] = [];
-  private displayTimeout: any;
+  private displayTimeout: ReturnType<typeof setTimeout> | null = null;
   private callSound: HTMLAudioElement;
+  private readonly unlockAudio = () => this.primeAudio();
 
   constructor(
     private signalr: SignalrService,
@@ -24,38 +25,67 @@ export class PublicScreen implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.callSound = new Audio('/assets/sounds/call.mp3');
+    this.callSound.preload = 'auto';
     this.callSound.load();
   }
 
   ngOnInit(): void {
+    this.registerAudioUnlock();
     this.signalr.startConnection();
 
     this.signalr.onReceiveCall((data: any) => {
-      console.log('📢 Dados brutos recebidos do SignalR:', data);
-      
+      console.log('Public recebeu chamada:', data);
+
       this.ngZone.run(() => {
         this.playCallSound();
-        
-        // Garante que pegamos o nome corretamente, independente de como o backend enviou
+
         const clientName = data.clientName || data.name || 'Consulente';
         const guideName = data.guideName || data.entityName || 'Entidade';
         const guideId = data.guideId || data.entityId || 'unknown';
 
-        console.log('🔄 Processando chamada com:', { clientName, guideName, guideId });
         this.processCall(clientName, guideName, guideId);
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.unlockAudio);
+    document.removeEventListener('keydown', this.unlockAudio);
+    document.removeEventListener('touchstart', this.unlockAudio);
+
+    if (this.displayTimeout) {
+      clearTimeout(this.displayTimeout);
+    }
   }
 
   private playCallSound(): void {
     try {
       this.callSound.currentTime = 0;
       this.callSound.play().catch(err => {
-        console.warn('⚠️ Não foi possível tocar o som:', err.message);
+        console.warn('Nao foi possivel tocar o som na Public:', err.message);
       });
     } catch (err) {
-      console.warn('⚠️ Erro ao tocar som:', err);
+      console.warn('Erro ao tocar som na Public:', err);
     }
+  }
+
+  private registerAudioUnlock(): void {
+    document.addEventListener('click', this.unlockAudio, { once: true });
+    document.addEventListener('keydown', this.unlockAudio, { once: true });
+    document.addEventListener('touchstart', this.unlockAudio, { once: true });
+  }
+
+  private primeAudio(): void {
+    this.callSound.muted = true;
+    this.callSound.play()
+      .then(() => {
+        this.callSound.pause();
+        this.callSound.currentTime = 0;
+        this.callSound.muted = false;
+      })
+      .catch(() => {
+        this.callSound.muted = false;
+      });
   }
 
   private processCall(clientName: string, guideName: string, guideId: string): void {
@@ -68,7 +98,6 @@ export class PublicScreen implements OnInit {
       calledAt: new Date().toISOString()
     };
 
-    // Exibe a chamada IMEDIATAMENTE, substituindo a anterior se houver
     this.currentAttendance = attendance;
     this.updateNext();
     this.startDisplayTimer();
@@ -81,7 +110,9 @@ export class PublicScreen implements OnInit {
   }
 
   private startDisplayTimer(): void {
-    if (this.displayTimeout) clearTimeout(this.displayTimeout);
+    if (this.displayTimeout) {
+      clearTimeout(this.displayTimeout);
+    }
 
     this.displayTimeout = setTimeout(() => {
       this.ngZone.run(() => {
@@ -100,6 +131,6 @@ export class PublicScreen implements OnInit {
           });
         }, 800);
       });
-    }, 7000); // 7 segundos de exibição
+    }, 7000);
   }
 }

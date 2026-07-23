@@ -79,6 +79,13 @@ public class CallController : ControllerBase
             return NotFound(new { message = "Consulente não encontrado" });
         }
 
+        if (!queueItem.IsCalled)
+        {
+            queueItem.IsCalled = true;
+            queueItem.CalledAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+
         var payload = new
         {
             clientName = queueItem.ClientName,
@@ -86,7 +93,7 @@ public class CallController : ControllerBase
             sessionEntityId = queueItem.SessionEntityId,
             guideId = queueItem.SessionEntity?.SpiritualGuideId,
             guideName = queueItem.SessionEntity?.SpiritualGuide?.Name,
-            calledAt = DateTime.UtcNow
+            calledAt = queueItem.CalledAt ?? DateTime.UtcNow
         };
 
         await _hub.Clients.All.SendAsync("ReceiveCall", payload);

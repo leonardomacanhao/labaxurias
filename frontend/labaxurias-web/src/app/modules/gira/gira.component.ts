@@ -1,8 +1,10 @@
 ﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
+import { DatePreferenceService } from '../../services/date-preference.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 
@@ -25,7 +27,7 @@ interface SessionEntity {
 @Component({
   selector: 'app-gira',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, RouterLink],
   templateUrl: './gira.component.html',
   styleUrl: './gira.component.css'
 })
@@ -34,11 +36,14 @@ export class GiraComponent implements OnInit {
 
   selectedDate: string = '';
   sessionEntities: SessionEntity[] = [];
+  searchTerm: string = '';
+  showMobileSearch: boolean = false;
   private hubConnection: signalR.HubConnection | null = null;
   private callSound: HTMLAudioElement;
 
   constructor(
     private api: ApiService,
+    private datePreference: DatePreferenceService,
     private cdr: ChangeDetectorRef
   ) {
     this.callSound = new Audio('/assets/sounds/call.mp3');
@@ -46,12 +51,7 @@ export class GiraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Sempre usar a data atual ao abrir o sistema
-    const today = new Date();
-    this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-    // Salvar no localStorage para manter durante a sessão
-    localStorage.setItem('gira_selected_date', this.selectedDate);
+    this.selectedDate = this.datePreference.getSelectedDate();
 
     this.loadSessionData();
     this.setupSignalR();
@@ -69,8 +69,41 @@ export class GiraComponent implements OnInit {
 
   onDateChange(): void {
     console.log('📅 Data alterada para:', this.selectedDate);
-    localStorage.setItem('gira_selected_date', this.selectedDate);
+    this.datePreference.setSelectedDate(this.selectedDate);
     this.loadSessionData();
+  }
+
+  get filteredSessionEntities(): SessionEntity[] {
+    const term = this.normalizeSearch(this.searchTerm);
+    if (!term) return this.sessionEntities;
+
+    return this.sessionEntities.filter(entity => {
+      const entityName = this.normalizeSearch(entity.entityName);
+      const mediumName = this.normalizeSearch(entity.mediumName);
+      return entityName.includes(term) || mediumName.includes(term);
+    });
+  }
+
+  get hasNoSearchResults(): boolean {
+    return this.sessionEntities.length > 0 && this.filteredSessionEntities.length === 0;
+  }
+
+  toggleMobileSearch(): void {
+    this.showMobileSearch = !this.showMobileSearch;
+    if (!this.showMobileSearch) {
+      this.searchTerm = '';
+      return;
+    }
+
+    setTimeout(() => document.querySelector<HTMLInputElement>('.mobile-search-panel input')?.focus());
+  }
+
+  private normalizeSearch(value: string): string {
+    return (value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 
   loadSessionData(): void {
@@ -146,15 +179,16 @@ export class GiraComponent implements OnInit {
     });
   }
 
-  repeatCall(queueItem: QueueItem): void {
-    console.log('🔔 Repetindo chamada:', queueItem.name);
+  callQueueItem(queueItem: QueueItem): void {
+    console.log(queueItem.isCalled ? '🔔 Repetindo chamada:' : '🔔 Chamando consulente:', queueItem.name);
     this.playCallSound();
 
     this.api.repeatCall(queueItem.id).subscribe({
       next: (data) => {
-        console.log('✅ Chamada repetida:', data);
+        console.log('✅ Chamada enviada:', data);
+        setTimeout(() => this.loadSessionData(), 500);
       },
-      error: (err) => console.error('❌ Erro ao repetir chamada:', err)
+      error: (err) => console.error('❌ Erro ao chamar consulente:', err)
     });
   }
 

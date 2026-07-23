@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,18 +8,48 @@ import { CommonModule } from '@angular/common';
   templateUrl: './header-info.component.html',
   styleUrl: './header-info.component.css'
 })
-export class HeaderInfoComponent implements OnInit {
+export class HeaderInfoComponent implements OnInit, OnDestroy {
   currentTime: string = '';
   currentDate: string = '';
+  private intervalId: number | null = null;
+
+  constructor(
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.updateDateTime();
-    setInterval(() => this.updateDateTime(), 1000);
+
+    this.ngZone.runOutsideAngular(() => {
+      this.intervalId = window.setInterval(() => {
+        this.ngZone.run(() => {
+          this.updateDateTime();
+          this.cdr.markForCheck();
+        });
+      }, 1000);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId !== null) {
+      window.clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   private updateDateTime(): void {
     const now = new Date();
-    this.currentTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    this.currentDate = now.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    this.currentTime = now.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    this.currentDate = now.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 }

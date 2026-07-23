@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
+import { DatePreferenceService } from '../../services/date-preference.service';
 import { FilterCalledPipe } from '../../pipes/filter-called.pipe';
 
 interface Attendance {
@@ -58,26 +59,59 @@ export class ReportComponent implements OnInit {
 
   constructor(
     private api: ApiService,
+    private datePreference: DatePreferenceService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-  // Sempre usar a data atual ao abrir o sistema
-  const today = new Date();
-  this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  
-  // Salvar no localStorage para manter durante a sessão
-  localStorage.setItem('gira_selected_date', this.selectedDate);
-  
-  this.loadReport();
-}
+    this.selectedDate = this.datePreference.getSelectedDate();
+    this.loadReport();
+  }
 
-  openCalendar(): void {
-    this.dateInput.nativeElement.showPicker();
+  openCalendar(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = this.selectedDate;
+    
+    // Calcular posição para ficar dentro da viewport
+    let top = rect.bottom + 5;
+    let left = rect.left;
+    
+    // Se estiver muito embaixo, abrir para cima
+    if (top + 300 > window.innerHeight) {
+      top = rect.top - 300;
+    }
+    
+    // Se estiver muito à direita, ajustar
+    if (left + 280 > window.innerWidth) {
+      left = window.innerWidth - 290;
+    }
+    
+    // Garantir que não fique negativo
+    if (top < 10) top = 10;
+    if (left < 10) left = 10;
+    
+    input.style.cssText = `position:fixed;top:${top}px;left:${left}px;opacity:0;z-index:9999;width:1px;height:1px;`;
+    document.body.appendChild(input);
+    input.focus();
+    input.showPicker();
+    
+    input.addEventListener('change', () => {
+      this.selectedDate = input.value;
+      this.onDateChange();
+      document.body.removeChild(input);
+    });
+    
+    input.addEventListener('blur', () => {
+      setTimeout(() => { if (document.body.contains(input)) document.body.removeChild(input); }, 300);
+    });
   }
 
   onDateChange(): void {
-    localStorage.setItem('gira_selected_date', this.selectedDate);
+    this.datePreference.setSelectedDate(this.selectedDate);
     this.loadReport();
   }
 
@@ -86,9 +120,17 @@ export class ReportComponent implements OnInit {
     this.loadReport();
   }
 
-  async generatePdf(): Promise<void> {
+  handlePrintAction(): void {
+    if (this.activeTab === 'cambones') {
+      this.printCambones();
+      return;
+    }
+    this.generatePDF();
+  }
+
+  async generatePDF(): Promise<void> {
     if (!this.reportData || this.reportData.entities.length === 0) {
-      alert('Não há dados para gerar o PDF.');
+      alert('Nao ha dados para gerar o PDF.');
       return;
     }
 
@@ -106,7 +148,7 @@ export class ReportComponent implements OnInit {
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
 
-      const title = this.activeTab === 'attendance' ? 'RELATÓRIO DE ATENDIMENTOS' : 'RELATÓRIO DE CONSULENTES';
+      const title = this.activeTab === 'attendance' ? 'RELATORIO DE ATENDIMENTOS' : 'RELATORIO DE CONSULENTES';
       doc.text(title, 10, 9);
 
       doc.setTextColor(200, 200, 200);
@@ -157,7 +199,7 @@ export class ReportComponent implements OnInit {
       doc.setTextColor(100, 100, 100);
       doc.setFontSize(8);
       doc.setFont('helvetica', 'italic');
-      doc.text(`Médium: ${entity.mediumName}`, 12, yPos + 7);
+      doc.text(`Medium: ${entity.mediumName}`, 12, yPos + 7);
 
       yPos += 12;
 
@@ -171,7 +213,7 @@ export class ReportComponent implements OnInit {
 
         autoTable(doc, {
           startY: yPos,
-          head: [['#', 'Consulente', 'Médium', 'Horário']],
+          head: [['#', 'Consulente', 'Medium', 'Horario']],
           body: tableData,
           theme: 'plain',
           headStyles: {
@@ -236,13 +278,13 @@ export class ReportComponent implements OnInit {
       cons.entityName,
       cons.mediumName,
       this.formatDateTime(cons.createdAt),
-      cons.isCalled ? 'Sim' : 'Não',
+      cons.isCalled ? 'Sim' : 'Nao',
       cons.isCalled && cons.calledAt ? this.formatDateTime(cons.calledAt) : '-'
     ]);
 
     autoTable(doc, {
       startY: startY,
-      head: [['#', 'Consulente', 'Entidade', 'Médium', 'Cadastro', 'Atendido', 'Atendimento']],
+      head: [['#', 'Consulente', 'Entidade', 'Medium', 'Cadastro', 'Atendido', 'Atendimento']],
       body: tableData,
       theme: 'striped',
       headStyles: {
@@ -282,7 +324,7 @@ export class ReportComponent implements OnInit {
 
   printCambones(): void {
     if (this.cambonesData.length === 0) {
-      alert('Não há dados para imprimir.');
+      alert('Nao ha dados para imprimir.');
       return;
     }
 
@@ -295,154 +337,55 @@ export class ReportComponent implements OnInit {
       let itemsHtml = '';
       entity.consulentes.forEach((consulente, i) => {
         const num = String(i + 1).padStart(2, '0');
-        itemsHtml += `<li>${num}. ${this.escapeHtml(consulente)}</li>`;
+        itemsHtml += '<li>' + num + '. ' + this.escapeHtml(consulente) + '</li>';
       });
 
       if (entity.consulentes.length === 0) {
-        itemsHtml = '<li style="color:#888; font-style:italic;">Nenhum consulente</li>';
+        itemsHtml = '<li style="color:#888;font-style:italic;">Nenhum consulente</li>';
       }
 
-      entitiesHtml += `
-        <div class="entity">
-          <div class="entity-header">
-            <strong>${this.escapeHtml(entity.entityName)}</strong>
-            <span>${this.escapeHtml(entity.mediumName)}</span>
-          </div>
-          <div class="divider thin"></div>
-          <ol class="list">
-            ${itemsHtml}
-          </ol>
-          <div class="divider"></div>
-        </div>
-      `;
+      entitiesHtml +=
+        '<div class="entity">' +
+        '<div class="entity-header"><strong>' + this.escapeHtml(entity.entityName) + '</strong><span>' + this.escapeHtml(entity.mediumName) + '</span></div>' +
+        '<div class="divider thin"></div>' +
+        '<ol class="list">' + itemsHtml + '</ol>' +
+        '<div class="divider"></div>';
     });
 
-    const printContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Lista para Cambones</title>
-  <style>
-    @page {
-      size: 80mm auto;
-      margin: 0;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      padding: 3mm;
-      width: 80mm;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 9pt;
-      color: #000;
-      line-height: 1.3;
-      background: #fff;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 3mm;
-    }
-    .header h1 {
-      font-size: 11pt;
-      font-weight: 700;
-      margin: 0 0 1mm 0;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .header p {
-      font-size: 9pt;
-      margin: 0;
-    }
-    .divider {
-      border-top: 1px dashed #000;
-      margin: 2mm 0;
-    }
-    .divider.thin {
-      margin: 1mm 0;
-      border-top-style: dotted;
-    }
-    .entity {
-      margin-bottom: 2mm;
-    }
-    .entity-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 1mm;
-      gap: 2mm;
-    }
-    .entity-header strong {
-      font-size: 10pt;
-      font-weight: 700;
-      flex: 1;
-    }
-    .entity-header span {
-      font-size: 8pt;
-      font-style: italic;
-    }
-    .list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .list li {
-      font-size: 9pt;
-      padding: 0.8mm 0;
-      border-bottom: 1px dotted #ccc;
-      margin: 0;
-    }
-    .list li:last-child {
-      border-bottom: none;
-    }
-    .footer {
-      margin-top: 3mm;
-      padding-top: 2mm;
-      border-top: 2px solid #000;
-      font-size: 9pt;
-      text-align: center;
-    }
-    .footer p {
-      margin: 0.5mm 0;
-    }
-    @media print {
-      body {
-        width: 80mm;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>LISTA DE CONSULENTES</h1>
-    <p>Data: ${dateFormatted}</p>
-  </div>
-  <div class="divider"></div>
-  ${entitiesHtml}
-  <div class="footer">
-    <p>Total de entidades: ${totalEntities}</p>
-    <p>Total de consulentes: ${totalConsulentes}</p>
-  </div>
-  <script>
-    window.onload = function() {
-      setTimeout(function() {
-        window.print();
-      }, 200);
-      window.onafterprint = function() {
-        window.close();
-      };
-    };
-  </script>
-</body>
-</html>`;
+    const printContent = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lista para Cambones</title>' +
+    '<style>' +
+    '@page{size:80mm auto;margin:0;}' +
+    '*{box-sizing:border-box;}' +
+    'body{margin:0;padding:3mm;width:80mm;font-family:"Courier New",Courier,monospace;font-size:9pt;color:#000;line-height:1.3;background:#fff;}' +
+    '.header{text-align:center;margin-bottom:3mm;}' +
+    '.header h1{font-size:11pt;font-weight:700;margin:0 0 1mm 0;letter-spacing:1px;text-transform:uppercase;}' +
+    '.header p{font-size:9pt;margin:0;}' +
+    '.divider{border-top:1px dashed #000;margin:2mm 0;}' +
+    '.divider.thin{margin:1mm 0;border-top-style:dotted;}' +
+    '.entity{margin-bottom:2mm;}' +
+    '.entity-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1mm;gap:2mm;}' +
+    '.entity-header strong{font-size:10pt;font-weight:700;flex:1;}' +
+    '.entity-header span{font-size:8pt;font-style:italic;}' +
+    '.list{list-style:none;padding:0;margin:0;}' +
+    '.list li{font-size:9pt;padding:0.8mm 0;border-bottom:1px dotted #ccc;margin:0;}' +
+    '.list li:last-child{border-bottom:none;}' +
+    '.footer{margin-top:3mm;padding-top:2mm;border-top:2px solid #000;font-size:9pt;text-align:center;}' +
+    '.footer p{margin:0.5mm 0;}' +
+    '@media print{body{width:80mm;}}' +
+    '</style></head><body>' +
+    '<div class="header"><h1>LISTA DE CONSULENTES</h1><p>Data: ' + dateFormatted + '</p></div>' +
+    '<div class="divider"></div>' +
+    entitiesHtml +
+    '<div class="footer"><p>Total de entidades: ' + totalEntities + '</p><p>Total de consulentes: ' + totalConsulentes + '</p></div>' +
+    '<script>window.onload=function(){setTimeout(function(){window.print();},200);window.onafterprint=function(){window.close();};};</script>' +
+    '</body></html>';
 
     const printWindow = window.open('', '_blank', 'width=350,height=700');
     if (printWindow) {
       printWindow.document.write(printContent);
       printWindow.document.close();
     } else {
-      alert('Não foi possível abrir a janela de impressão. Verifique se o navegador não bloqueou pop-ups.');
+      alert('Nao foi possivel abrir a janela de impressao. Verifique se o navegador nao bloqueou pop-ups.');
     }
   }
 
@@ -462,22 +405,24 @@ export class ReportComponent implements OnInit {
     return date.toLocaleDateString('pt-BR');
   }
 
+  /** Converte UTC para GMT-4 (America/Cuiaba) */
   formatDateTime(dateString: string): string {
     if (!dateString) return '-';
-    
-    // Corrige o bug de fuso horário extraindo diretamente a hora e minuto da string
-    // Isso evita que o JavaScript converta para UTC e adicione/subtraia horas
-    const match = dateString.match(/(\d{2}):(\d{2})/);
-    if (match) {
-      return `${match[1]}:${match[2]}`;
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('pt-BR', {
+        timeZone: 'America/Cuiaba',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    } catch (e) {
+      const match = dateString.match(/(\d{2}):(\d{2})/);
+      if (match) {
+        return match[1] + ':' + match[2];
+      }
+      return dateString;
     }
-    
-    // Fallback caso o formato seja diferente
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 
   getTotalAttendances(): number {
@@ -504,7 +449,7 @@ export class ReportComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erro ao carregar relatório:', err);
+          console.error('Erro ao carregar relatorio:', err);
           this.loading = false;
         }
       });
@@ -537,7 +482,7 @@ export class ReportComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erro ao carregar relatório:', err);
+          console.error('Erro ao carregar relatorio:', err);
           this.loading = false;
         }
       });
@@ -555,7 +500,7 @@ export class ReportComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erro ao carregar relatório:', err);
+          console.error('Erro ao carregar relatorio:', err);
           this.loading = false;
         }
       });

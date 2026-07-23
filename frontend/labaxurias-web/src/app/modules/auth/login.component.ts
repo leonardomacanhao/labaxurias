@@ -92,8 +92,35 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #000000;
+      background:
+        radial-gradient(circle at top left, rgba(226, 72, 31, 0.16) 0%, transparent 34%),
+        linear-gradient(135deg, #1a110a 0%, #120804 45%, #2a170d 100%);
       overflow: hidden;
+      padding: 24px;
+    }
+
+    .login-wrapper::before,
+    .login-wrapper::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .login-wrapper::before {
+      width: 30rem;
+      height: 30rem;
+      top: -12rem;
+      right: -10rem;
+      background: radial-gradient(circle, rgba(226, 72, 31, 0.28) 0%, rgba(226, 72, 31, 0) 70%);
+    }
+
+    .login-wrapper::after {
+      width: 24rem;
+      height: 24rem;
+      bottom: -10rem;
+      left: -8rem;
+      background: radial-gradient(circle, rgba(201, 151, 63, 0.16) 0%, rgba(201, 151, 63, 0) 70%);
     }
 
     .login-container {
@@ -105,13 +132,12 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .login-card {
-      background: rgba(20, 20, 30, 0.95);
-      backdrop-filter: blur(20px);
+      background: linear-gradient(145deg, rgba(26, 16, 10, 0.97) 0%, rgba(14, 8, 5, 0.97) 100%);
+      backdrop-filter: blur(18px);
       border-radius: 28px;
       padding: 56px 48px;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6),
-                  0 0 0 1px rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(232, 188, 114, 0.24);
     }
 
     .logo-section {
@@ -124,23 +150,29 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       justify-content: center;
       align-items: center;
-      filter: drop-shadow(0 0 20px rgba(255, 51, 51, 0.4));
+      filter: drop-shadow(0 0 20px rgba(226, 72, 31, 0.28));
     }
 
     .title {
-      font-size: 48px;
-      font-weight: 800;
-      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.2rem, 4.6vw, 3rem);
+      font-weight: 700;
+      color: transparent;
       margin: 0 0 12px 0;
-      letter-spacing: 2px;
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.08em;
+      line-height: 1.05;
+      white-space: nowrap;
+      background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 44%, var(--ember-bright) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 0 24px rgba(226, 72, 31, 0.18);
     }
 
     .subtitle {
       font-size: 20px;
-      color: #e0e0e0;
+      color: var(--text-secondary);
       margin: 0;
-      font-weight: 400;
+      font-weight: 500;
       letter-spacing: 1px;
     }
 
@@ -159,7 +191,7 @@ import { AuthService } from '../../services/auth.service';
     .input-label {
       font-size: 16px;
       font-weight: 700;
-      color: #ffffff;
+      color: var(--text-primary);
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -176,16 +208,16 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
+      color: var(--gold-bright);
     }
 
     .input-field {
       width: 100%;
       padding: 18px 18px 18px 56px;
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(32, 21, 14, 0.92);
+      border: 1px solid rgba(232, 188, 114, 0.16);
       border-radius: 14px;
-      color: #ffffff;
+      color: var(--text-primary);
       font-size: 18px;
       font-weight: 500;
       transition: all 0.3s ease;
@@ -193,14 +225,14 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .input-field::placeholder {
-      color: #cccccc;
+      color: var(--text-secondary);
     }
 
     .input-field:focus {
       outline: none;
-      border-color: #ff3333;
-      background: rgba(0, 0, 0, 0.7);
-      box-shadow: 0 0 0 4px rgba(255, 51, 51, 0.15);
+      border-color: var(--ember-bright);
+      background: rgba(26, 18, 12, 1);
+      box-shadow: 0 0 0 4px rgba(226, 72, 31, 0.16);
     }
 
     .btn-login {
@@ -210,10 +242,10 @@ import { AuthService } from '../../services/auth.service';
       gap: 14px;
       width: 100%;
       padding: 20px 32px;
-      background: linear-gradient(135deg, #ff3333 0%, #cc0000 100%);
+      background: linear-gradient(135deg, var(--ember-bright) 0%, var(--ember) 100%);
       border: none;
       border-radius: 14px;
-      color: #ffffff;
+      color: #fbe6d8;
       font-size: 20px;
       font-weight: 800;
       cursor: pointer;
@@ -221,12 +253,12 @@ import { AuthService } from '../../services/auth.service';
       text-transform: uppercase;
       letter-spacing: 1.5px;
       margin-top: 12px;
-      box-shadow: 0 10px 28px rgba(255, 51, 51, 0.4);
+      box-shadow: 0 10px 28px rgba(226, 72, 31, 0.28);
     }
 
     .btn-login:hover:not(:disabled) {
       transform: translateY(-3px);
-      box-shadow: 0 16px 36px rgba(255, 51, 51, 0.5);
+      box-shadow: 0 16px 36px rgba(226, 72, 31, 0.38);
     }
 
     .btn-login:active:not(:disabled) {
@@ -234,7 +266,7 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .btn-login:disabled {
-      background: #444444;
+      background: linear-gradient(135deg, #4a2c1c 0%, #2e1b12 100%);
       cursor: not-allowed;
       box-shadow: none;
     }
@@ -259,10 +291,10 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       gap: 14px;
       padding: 16px 18px;
-      background: rgba(255, 51, 51, 0.15);
-      border: 1px solid rgba(255, 51, 51, 0.4);
+      background: rgba(226, 72, 31, 0.12);
+      border: 1px solid rgba(226, 72, 31, 0.35);
       border-radius: 10px;
-      color: #ff8888;
+      color: #ffb08d;
       font-size: 16px;
       font-weight: 600;
       animation: slideIn 0.3s ease;
@@ -272,7 +304,7 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #ff3333;
+      color: var(--ember-bright);
     }
 
     @keyframes slideIn {
@@ -290,12 +322,12 @@ import { AuthService } from '../../services/auth.service';
       margin-top: 40px;
       text-align: center;
       padding-top: 28px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      border-top: 1px solid var(--border);
     }
 
     .footer-text {
       font-size: 16px;
-      color: #cccccc;
+      color: var(--text-secondary);
       margin: 0;
       font-style: italic;
       font-weight: 500;
@@ -320,7 +352,8 @@ import { AuthService } from '../../services/auth.service';
         height: 64px;
       }
       .title {
-        font-size: 36px;
+        font-size: clamp(1.9rem, 7vw, 2.4rem);
+        white-space: normal;
       }
       .subtitle {
         font-size: 18px;

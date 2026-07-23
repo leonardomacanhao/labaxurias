@@ -1,6 +1,15 @@
-﻿<div class="page-header">
-  <h1 class="page-title">{{ title }}</h1>
+<header class="page-header">
+  <button class="hamburger-btn" (click)="toggleMenu()" [class.active]="isMenuOpen">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="title-stack">
+    <h1 class="page-title">{{ title }}</h1>
+  </div>
+
   <div class="page-actions">
     <ng-content></ng-content>
   </div>
-</div>
+</header>

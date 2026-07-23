@@ -1,0 +1,6 @@
+
+/* Correção cirúrgica: remover espaçamento APENAS da borda superior da tela */
+main, .main-content, app-admin-layout {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}

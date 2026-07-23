@@ -1,13 +1,19 @@
 import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { SidebarStateService } from '../../services/sidebar-state.service';
 
 @Component({
   selector: 'app-page-header',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.css'
 })
 export class PageHeaderComponent {
   @Input() title: string = '';
+  isMenuOpen: boolean = false;
+
+  constructor(private sidebarState: SidebarStateService) {}
+
+  toggleMenu(): void {
+    this.sidebarState.toggleMobileMenu();
+  }
 }

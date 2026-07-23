@@ -2,9 +2,9 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #000;
-    color: #fff;
+    font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-surface) 45%, #140b07 100%);
+    color: var(--text-primary);
     overflow: hidden;
 }
 
@@ -18,11 +18,37 @@ html, body {
 .screen {
     width: 100%;
     height: 100vh;
-    background: #000;
-    color: #fff;
+    background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-surface) 50%, #140b07 100%);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
+}
+
+.screen::before,
+.screen::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(0);
+}
+
+.screen::before {
+    width: 36rem;
+    height: 36rem;
+    top: -14rem;
+    right: -10rem;
+    background: radial-gradient(circle, rgba(226, 72, 31, 0.24) 0%, rgba(226, 72, 31, 0) 70%);
+}
+
+.screen::after {
+    width: 28rem;
+    height: 28rem;
+    bottom: -12rem;
+    left: -8rem;
+    background: radial-gradient(circle, rgba(201, 151, 63, 0.16) 0%, rgba(201, 151, 63, 0) 72%);
 }
 
 .waiting-screen {
@@ -32,6 +58,8 @@ html, body {
     align-items: center;
     padding: clamp(20px, 5vw, 60px);
     box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
 
 .logo-container {
@@ -41,28 +69,70 @@ html, body {
     align-items: center;
     gap: clamp(20px, 4vw, 40px);
     animation: fadeInSlow 2s ease-in;
+    padding: clamp(12px, 3vw, 28px);
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
 }
 
 .logo-image {
-    width: clamp(180px, 25vw, 416px);
-    height: auto;
+    width: clamp(180px, 25vw, 416px) !important;
+    height: clamp(180px, 25vw, 416px) !important;
     max-width: 90vw;
+    object-fit: contain !important;
+    border-radius: 50%;
+    background: transparent;
+    filter:
+        contrast(1.08)
+        saturate(1.12)
+        drop-shadow(0 0 24px rgba(226, 72, 31, 0.34));
 }
 
 .logo-text {
-    font-family: 'Cinzel Decorative', serif;
+    font-family: 'Cinzel', serif;
+    position: relative;
     font-size: clamp(28px, 4vw, 56px);
     font-weight: 700;
     letter-spacing: clamp(4px, 1vw, 14px);
     text-transform: uppercase;
-    background: linear-gradient(135deg, #fff 0%, #d4af37 50%, #fff 100%);
+    background: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 42%, var(--ember-bright) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 0.28em 0.15em 0;
     line-height: 1.2;
+    text-shadow: 0 0 24px rgba(226, 72, 31, 0.2);
+    isolation: isolate;
+}
+
+.logo-text::before,
+.logo-text::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    color: transparent;
+    background:
+        linear-gradient(180deg, rgba(255, 226, 132, 0.92) 0%, rgba(226, 72, 31, 0.75) 48%, rgba(135, 34, 19, 0) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: blur(9px);
+    transform-origin: center bottom;
+    pointer-events: none;
+}
+
+.logo-text::before {
+    animation: letterFlameRise 3.8s ease-in-out infinite;
+}
+
+.logo-text::after {
+    animation: letterFlameRise 5.2s ease-in-out infinite reverse;
+    filter: blur(16px);
+    opacity: 0.72;
 }
 
 @keyframes fadeInSlow {
@@ -75,4 +145,34 @@ html, body {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+@keyframes letterFlameRise {
+    0%, 100% {
+        opacity: 0.22;
+        transform: translate3d(0, 0, 0) scaleY(1);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    38% {
+        opacity: 0.74;
+        transform: translate3d(0, -10px, 0) scaleY(1.28) skewX(-3deg);
+        clip-path: polygon(0 0, 8% 16%, 18% 2%, 30% 20%, 42% 0, 55% 18%, 68% 3%, 82% 19%, 100% 0, 100% 100%, 0 100%);
+    }
+
+    68% {
+        opacity: 0.38;
+        transform: translate3d(0, -18px, 0) scaleY(1.48) skewX(4deg);
+        clip-path: polygon(0 10%, 10% 0, 22% 19%, 34% 4%, 47% 23%, 60% 2%, 73% 17%, 86% 3%, 100% 15%, 100% 100%, 0 100%);
+    }
+}
+
+/* Imagem circular para mascarar o fundo */
+.img-circular {
+  border-radius: 50% !important;
+  width: clamp(180px, 25vw, 416px) !important;
+  height: clamp(180px, 25vw, 416px) !important;
+  object-fit: contain !important;
+  display: block;
+  margin: 0 auto;
 }

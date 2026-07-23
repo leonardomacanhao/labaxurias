@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
 import { ApiService } from '../../services/api.service';
+import { DatePreferenceService } from '../../services/date-preference.service';
 import { Medium } from '../../models/medium';
 import { Guide } from '../../models/guide';
 import { CdkDragDrop, moveItemInArray, DragDropModule } from '@angular/cdk/drag-drop';
@@ -58,17 +59,14 @@ export class AtendimentosComponent implements OnInit {
   showConfirmRemoveEmptyModal: boolean = false;
   entityToRemoveEmpty: SelectedEntity | null = null;
 
-  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private api: ApiService,
+    private datePreference: DatePreferenceService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    // Tentar recuperar a data do localStorage, senão usar hoje
-    const savedDate = localStorage.getItem('gira_selected_date');
-    if (savedDate) {
-      this.selectedDate = savedDate;
-    } else {
-      const today = new Date();
-      this.selectedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
+    this.selectedDate = this.datePreference.getSelectedDate();
     
     console.log('📅 Data inicial:', this.selectedDate);
     
@@ -80,7 +78,7 @@ export class AtendimentosComponent implements OnInit {
   
   onDateChange(): void {
     console.log('📅 Data alterada para:', this.selectedDate);
-    localStorage.setItem('gira_selected_date', this.selectedDate);
+    this.datePreference.setSelectedDate(this.selectedDate);
     this.loadSessionData();
   }
 
@@ -370,12 +368,28 @@ export class AtendimentosComponent implements OnInit {
 
   addConsulente(): void {
     console.log('➕ Adicionando consulente:', this.newConsulenteName);
-    if (!this.newConsulenteName.trim() || !this.activeEntity) return;
-    this.entityQueues[this.activeEntity.entityId].push({
+    if (!this.newConsulenteName.trim() || !this.activeEntity) {
+      console.warn('⚠️ Dados inválidos:', { name: this.newConsulenteName, activeEntity: this.activeEntity });
+      return;
+    }
+    
+    const entityId = this.activeEntity.entityId;
+    if (!this.entityQueues[entityId]) {
+      console.log('📋 Inicializando fila para entidade:', entityId);
+      this.entityQueues[entityId] = [];
+    }
+    
+    const newQueueItem: QueueItem = {
       id: crypto.randomUUID(),
       name: this.newConsulenteName.trim()
-    });
+    };
+    
+    this.entityQueues[entityId].push(newQueueItem);
+    console.log('✅ Consulente adicionado:', newQueueItem);
+    console.log('📊 Fila atual:', this.entityQueues[entityId]);
+    
     this.newConsulenteName = '';
+    this.cdr.detectChanges();
     this.saveSession();
   }
 

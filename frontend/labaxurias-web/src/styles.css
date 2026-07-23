@@ -1,1 +1,196 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --bg-base: #060302;
+  --bg-surface: #0e0906;
+  --bg-elevated: #1a120c;
+  --border: rgba(232, 188, 114, 0.10);
+  --border-strong: rgba(232, 188, 114, 0.26);
+  --ember: #8f2a1c;
+  --ember-bright: #e2481f;
+  --ember-glow: rgba(226, 72, 31, 0.3);
+  --gold: #c9973f;
+  --gold-bright: #f0c581;
+  --gold-glow: rgba(201, 151, 63, 0.3);
+  --success: #2f9e44;
+  --success-hover: #248232;
+  --success-dark: #1b5e2a;
+  --success-light: rgba(47, 158, 68, 0.14);
+  --success-glow: rgba(47, 158, 68, 0.28);
+  --text-primary: #f3e9d8;
+  --text-secondary: #a8927c;
+  --text-muted: #6e5a48;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Marrom expandido para substituir cinzas */
+  --brown-900: #060302;
+  --brown-800: #0e0906;
+  --brown-700: #1a120c;
+  --brown-600: #2a1c12;
+  --brown-500: #3e2a1c;
+  --brown-400: #5a3d28;
+  --brown-300: #7a5538;
+  --brown-200: #a07a4f;
+  --brown-100: #c9a56d;
+  --brown-50: #f0dcc0;
+
+  /* Acento laranja-queimado */
+  --accent: #e2481f;
+  --accent-hover: #b83a18;
+  --accent-dark: #8f2a1c;
+  --accent-light: rgba(226, 72, 31, 0.12);
+}
+
+body:not(.public-screen-route) {
+  --bg-base: #0a0503;
+  --bg-surface: #18100a;
+  --bg-elevated: #21160e;
+  --border: rgba(240, 197, 129, 0.2);
+  --border-strong: rgba(240, 197, 129, 0.38);
+  --ember-glow: rgba(255, 92, 43, 0.44);
+  --gold: #e0b357;
+  --gold-bright: #ffe0a3;
+  --gold-glow: rgba(255, 205, 110, 0.43);
+  --success: #43c75f;
+  --success-hover: #36ad4f;
+  --success-light: rgba(67, 199, 95, 0.2);
+  --success-glow: rgba(67, 199, 95, 0.4);
+  --text-primary: #fff4e1;
+  --text-secondary: #d0b18f;
+  --text-muted: #987a5f;
+  --brown-900: #0a0503;
+  --brown-800: #18100a;
+  --brown-700: #281a10;
+  --brown-600: #3a2718;
+  --brown-500: #573a25;
+  --brown-400: #7b5638;
+  --brown-300: #a1744d;
+  --brown-200: #c99b60;
+  --brown-100: #e6c17b;
+  --accent: #ff5a2a;
+  --accent-hover: #e2481f;
+  --accent-dark: #b83718;
+  --accent-light: rgba(255, 90, 42, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Manrope', 'Segoe UI', Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-base) 0%, #040201 100%);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(226, 72, 31, 0.16) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  body:not(.public-screen-route) app-page-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 90 !important;
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+}
+
+@keyframes flame-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.9); }
+  45% { opacity: 1; transform: scale(1.15); }
+  60% { opacity: 0.85; transform: scale(1.05); }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* === NOVAS ANIMAÇÕES DE MOVIMENTO === */
+
+@keyframes shimmer-slide {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--ember-glow); }
+  50% { box-shadow: 0 0 24px var(--ember-glow), 0 0 48px rgba(226, 72, 31, 0.15); }
+}
+
+@keyframes card-sweep {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes border-dance {
+  0%, 100% { border-color: var(--border); }
+  50% { border-color: var(--border-strong); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Utility classes for motion */
+.motion-float {
+  animation: float-y 3s ease-in-out infinite;
+}
+
+.motion-glow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.motion-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark::before,
+  .emblem .glow,
+  .emblem .rays {
+    animation: none !important;
+  }
+}
