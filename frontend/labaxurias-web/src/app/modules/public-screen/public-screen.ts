@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SignalrService, SignalrStatus } from '../../services/signalr';
-import { ApiService } from '../../services/api.service';
 import { AttendancePanelComponent } from './components/attendance-panel/attendance-panel.component';
 import { HeaderInfoComponent } from './components/header-info/header-info.component';
 import { QueueItem } from './models/queue-item.model';
@@ -26,7 +25,7 @@ interface PublicPanelSettings {
   standalone: true,
   imports: [CommonModule, AttendancePanelComponent, HeaderInfoComponent],
   templateUrl: './public-screen.html',
-  styleUrl: './public-screen.css',
+  styleUrl: './public-screen.css'
 })
 export class PublicScreen implements OnInit, OnDestroy {
   currentAttendance: QueueItem | null = null;
@@ -35,6 +34,7 @@ export class PublicScreen implements OnInit, OnDestroy {
   connectionStatus: SignalrStatus = 'disconnected';
   audioReady: boolean = false;
   isToolbarOpen: boolean = false;
+
   settings: PublicPanelSettings = {
     headerTitle: 'T.U.C.U.C.J.',
     headerSubtitle: 'Sistema de Atendimento',
@@ -48,26 +48,6 @@ export class PublicScreen implements OnInit, OnDestroy {
     logoSize: 416,
     recentFontSize: 11
   };
-  fontOptions = [
-    { value: 'Cinzel', label: 'Cinzel' },
-    { value: 'Manrope', label: 'Manrope' },
-    { value: 'Georgia', label: 'Georgia' },
-    { value: 'Times New Roman', label: 'Times' },
-    { value: 'Trebuchet MS', label: 'Trebuchet' },
-    { value: 'Verdana', label: 'Verdana' }
-  ];
-  animationOptions = [
-    { value: 'fire', label: 'Fogo' },
-    { value: 'ember', label: 'Brasa' },
-    { value: 'pulse', label: 'Pulso' },
-    { value: 'shine', label: 'Brilho' },
-    { value: 'float', label: 'Flutuar' },
-    { value: 'wave', label: 'Onda' },
-    { value: 'breath', label: 'Respirar' },
-    { value: 'spark', label: 'Faíscas' },
-    { value: 'focus', label: 'Foco' },
-    { value: 'still', label: 'Parado' }
-  ];
 
   private queueItems: QueueItem[] = [];
   private displayTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -77,10 +57,15 @@ export class PublicScreen implements OnInit, OnDestroy {
   private statusSubscription?: Subscription;
   private callSound: HTMLAudioElement;
   private readonly unlockAudio = () => this.primeAudio();
+  private readonly settingsListener = (event: StorageEvent) => {
+    if (!event.key || event.key === 'publicPanelSettings') {
+      this.loadSettings();
+      this.cdr.markForCheck();
+    }
+  };
 
   constructor(
     private signalr: SignalrService,
-    private api: ApiService,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef
   ) {
@@ -91,8 +76,10 @@ export class PublicScreen implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadSettings();
-    this.settingsRefreshInterval = setInterval(() => this.loadSettings(), 10000);
+    window.addEventListener('storage', this.settingsListener);
+    this.settingsRefreshInterval = setInterval(() => this.loadSettings(), 3000);
     this.registerAudioUnlock();
+
     this.statusSubscription = this.signalr.status$.subscribe(status => {
       this.connectionStatus = status;
       if (status === 'connected') {
@@ -110,8 +97,6 @@ export class PublicScreen implements OnInit, OnDestroy {
     }, 7000);
 
     this.signalr.onReceiveCall((data: any) => {
-      console.log('Public recebeu chamada:', data);
-
       this.ngZone.run(() => {
         this.playCallSound();
 
@@ -132,19 +117,12 @@ export class PublicScreen implements OnInit, OnDestroy {
     document.removeEventListener('click', this.unlockAudio);
     document.removeEventListener('keydown', this.unlockAudio);
     document.removeEventListener('touchstart', this.unlockAudio);
+    window.removeEventListener('storage', this.settingsListener);
     this.statusSubscription?.unsubscribe();
 
-    if (this.displayTimeout) {
-      clearTimeout(this.displayTimeout);
-    }
-
-    if (this.registerPanelInterval) {
-      clearInterval(this.registerPanelInterval);
-    }
-
-    if (this.settingsRefreshInterval) {
-      clearInterval(this.settingsRefreshInterval);
-    }
+    if (this.displayTimeout) clearTimeout(this.displayTimeout);
+    if (this.registerPanelInterval) clearInterval(this.registerPanelInterval);
+    if (this.settingsRefreshInterval) clearInterval(this.settingsRefreshInterval);
 
     this.wakeLock?.release?.();
   }
@@ -184,6 +162,21 @@ export class PublicScreen implements OnInit, OnDestroy {
     }
   }
 
+  primeAudio(): void {
+    this.callSound.muted = true;
+    this.callSound.play()
+      .then(() => {
+        this.callSound.pause();
+        this.callSound.currentTime = 0;
+        this.callSound.muted = false;
+        this.audioReady = true;
+        this.cdr.markForCheck();
+      })
+      .catch(() => {
+        this.callSound.muted = false;
+      });
+  }
+
   private playCallSound(): void {
     try {
       this.callSound.currentTime = 0;
@@ -201,29 +194,15 @@ export class PublicScreen implements OnInit, OnDestroy {
     document.addEventListener('touchstart', this.unlockAudio, { once: true });
   }
 
-  primeAudio(): void {
-    this.callSound.muted = true;
-    this.callSound.play()
-      .then(() => {
-        this.callSound.pause();
-        this.callSound.currentTime = 0;
-        this.callSound.muted = false;
-        this.audioReady = true;
-        this.cdr.markForCheck();
-      })
-      .catch(() => {
-        this.callSound.muted = false;
-      });
-  }
-
   private loadSettings(): void {
-    this.api.getPublicPanelSettings().subscribe({
-      next: settings => {
-        this.settings = { ...this.settings, ...settings };
-        this.cdr.markForCheck();
-      },
-      error: err => console.warn('Nao foi possivel carregar configuracoes do painel publico:', err)
-    });
+    const stored = localStorage.getItem('publicPanelSettings');
+    if (!stored) return;
+
+    try {
+      this.settings = { ...this.settings, ...JSON.parse(stored) };
+    } catch {
+      localStorage.removeItem('publicPanelSettings');
+    }
   }
 
   private processCall(clientName: string, guideName: string, guideId: string): void {
@@ -240,7 +219,6 @@ export class PublicScreen implements OnInit, OnDestroy {
     this.recentCalls = [attendance, ...this.recentCalls.filter(item => item.uniqueId !== attendance.uniqueId)].slice(0, 3);
     this.updateNext();
     this.startDisplayTimer();
-
     this.cdr.detectChanges();
   }
 
@@ -271,18 +249,6 @@ export class PublicScreen implements OnInit, OnDestroy {
       this.ngZone.run(() => {
         this.currentAttendance = null;
         this.cdr.detectChanges();
-
-        setTimeout(() => {
-          this.ngZone.run(() => {
-            if (this.queueItems.length > 0) {
-              this.currentAttendance = this.queueItems[0];
-              this.queueItems = this.queueItems.slice(1);
-              this.updateNext();
-              this.startDisplayTimer();
-            }
-            this.cdr.detectChanges();
-          });
-        }, 800);
       });
     }, this.settings.displaySeconds * 1000);
   }

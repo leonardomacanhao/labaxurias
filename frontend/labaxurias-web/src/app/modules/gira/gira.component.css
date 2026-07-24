@@ -1,4 +1,4 @@
-/* Date Picker - Desktop Padrão */
+﻿/* Date Picker - Desktop PadrÃ£o */
 .date-picker-wrapper { display: flex; align-items: center; gap: 0.6rem; background: var(--bg-elevated); padding: 0.4rem 1rem; border-radius: 6px; border: 1px solid var(--brown-500); }
 .date-picker-wrapper label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 .date-display { position: relative; display: flex; align-items: center; background: var(--bg-base); border: 1px solid var(--brown-500); border-radius: 6px; overflow: hidden; }
@@ -140,172 +140,7 @@
   color: #ff9b80;
 }
 
-.panel-settings-fab {
-  position: fixed;
-  right: 1.2rem;
-  bottom: 1.2rem;
-  z-index: 110;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid rgba(240, 197, 129, 0.24);
-  background: rgba(14, 9, 6, 0.78);
-  color: var(--gold-bright);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-  transition: 0.2s;
-}
-
-.panel-settings-fab:hover {
-  border-color: var(--gold);
-  transform: translateY(-1px);
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1300;
-  background: rgba(0, 0, 0, 0.72);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.panel-settings-modal {
-  width: min(760px, 94vw);
-  max-height: min(760px, 92vh);
-  background: var(--bg-elevated);
-  border: 1px solid var(--brown-500);
-  border-radius: 10px;
-  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.panel-settings-header,
-.panel-settings-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.panel-settings-footer {
-  border-top: 1px solid var(--border);
-  border-bottom: 0;
-  justify-content: flex-end;
-}
-
-.panel-settings-header h2 {
-  margin: 0;
-  color: var(--gold-bright);
-  font-size: 1.05rem;
-  letter-spacing: 0;
-}
-
-.modal-close {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 1.7rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.panel-settings-body {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem 1rem;
-  padding: 1.2rem;
-  overflow-y: auto;
-}
-
-.panel-settings-body label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.panel-settings-body input,
-.panel-settings-body select {
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  background: var(--bg-base);
-  border: 1px solid var(--brown-500);
-  color: var(--text-primary);
-  border-radius: 6px;
-  padding: 0.65rem 0.75rem;
-  outline: none;
-}
-
-.panel-settings-body input:focus,
-.panel-settings-body select:focus {
-  border-color: var(--success);
-  box-shadow: 0 0 0 2px var(--success-light);
-}
-
-.logo-picker-row,
-.color-picker-row,
-.range-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.color-picker-row {
-  grid-template-columns: 48px minmax(0, 1fr);
-}
-
-.range-row {
-  grid-template-columns: minmax(0, 1fr) 76px;
-}
-
-.color-picker-row input[type="color"] {
-  height: 40px;
-  padding: 0.2rem;
-}
-
-.pick-logo-btn,
-.btn-save-panel,
-.btn-cancel {
-  border-radius: 6px;
-  border: 1px solid transparent;
-  padding: 0.65rem 1rem;
-  color: var(--text-primary);
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.pick-logo-btn,
-.btn-save-panel {
-  background: var(--success);
-  border-color: var(--success);
-}
-
-.btn-cancel {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.file-input-hidden {
-  display: none;
-}
-
-/* Botão IR PARA ATENDIMENTOS */
+/* BotÃ£o IR PARA ATENDIMENTOS */
 .btn-go-to-attendance {
   display: inline-block;
   margin-top: 0.5rem;
@@ -357,12 +192,6 @@
 /* MOBILE ONLY - DESKTOP INTACTO             */
 /* ========================================= */
 @media (max-width: 768px) {
-  .panel-settings-fab {
-    left: 1.2rem;
-    right: auto;
-    bottom: 2rem;
-  }
-
   .content-area { padding: 1rem; }
   .entities-grid { grid-template-columns: 1fr; gap: 1rem; }
   .entity-card { padding: 1rem; }
@@ -392,7 +221,7 @@
   /* Esconde seletor completo no mobile */
   .date-picker-wrapper { display: none !important; }
   
-  /* Mostra badge de data limpa à direita */
+  /* Mostra badge de data limpa Ã  direita */
   .mobile-date-display {
     display: flex !important;
     align-items: center;
@@ -402,7 +231,7 @@
     color: #fff;
   }
 
-  /* FAB Calendário Mobile */
+  /* FAB CalendÃ¡rio Mobile */
   .fab-calendar {
     display: flex;
     position: fixed;
@@ -431,7 +260,7 @@
 }
 
 /* ========================================= */
-/* PADRONIZAÇÃO DESKTOP - CAMPOS DE DATA     */
+/* PADRONIZAÃ‡ÃƒO DESKTOP - CAMPOS DE DATA     */
 /* ========================================= */
 @media (min-width: 769px) {
   .date-picker-wrapper {
@@ -449,10 +278,10 @@
 
 
 /* ==========================================================
-   PADRÃO UNIVERSAL DE HEADER MOBILE (Gira, Atendimentos, Cadastros, Relatórios)
+   PADRÃƒO UNIVERSAL DE HEADER MOBILE (Gira, Atendimentos, Cadastros, RelatÃ³rios)
    ========================================================== */
 @media (max-width: 768px) {
-  /* Força o header a ser uma única linha de 48px */
+  /* ForÃ§a o header a ser uma Ãºnica linha de 48px */
   .page-header {
     height: 48px !important;
     padding: 0 1rem !important;
@@ -463,7 +292,7 @@
     gap: 0.5rem !important;
   }
 
-  /* Título sempre no centro, sem quebrar */
+  /* TÃ­tulo sempre no centro, sem quebrar */
   .page-title {
     font-size: 1rem !important;
     line-height: 1 !important;
@@ -476,7 +305,7 @@
     margin: 0 !important;
   }
 
-  /* Ações (Data/Botões) sempre à direita, sem crescer */
+  /* AÃ§Ãµes (Data/BotÃµes) sempre Ã  direita, sem crescer */
   .header-actions {
     display: flex !important;
     align-items: center !important;
@@ -500,4 +329,5 @@
     color: #fff !important;
   }
 }
+
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../core/components/page-header/page-header.component';
@@ -76,7 +76,7 @@ export class ReportComponent implements OnInit {
     input.type = 'date';
     input.value = this.selectedDate;
     
-    // Calcular posição para ficar dentro da viewport
+    // Calcular posiÃ§Ã£o para ficar dentro da viewport
     let top = rect.bottom + 5;
     let left = rect.left;
     
@@ -85,12 +85,12 @@ export class ReportComponent implements OnInit {
       top = rect.top - 300;
     }
     
-    // Se estiver muito à direita, ajustar
+    // Se estiver muito Ã  direita, ajustar
     if (left + 280 > window.innerWidth) {
       left = window.innerWidth - 290;
     }
     
-    // Garantir que não fique negativo
+    // Garantir que nÃ£o fique negativo
     if (top < 10) top = 10;
     if (left < 10) left = 10;
     

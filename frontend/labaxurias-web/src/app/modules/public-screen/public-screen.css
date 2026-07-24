@@ -1,4 +1,4 @@
-html, body {
+﻿html, body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -442,14 +442,7 @@ html, body {
         height: 24px;
         padding: 0 0.38rem;
         font-size: 0.58rem;
-    }
-
-    .icon-btn {
-        width: 24px;
-        padding: 0;
-    }
-
-    .recent-calls {
+    }.recent-calls {
         left: 10px;
         right: 46px;
         bottom: 10px;
@@ -468,3 +461,4 @@ html, body {
         display: none;
     }
 }
+

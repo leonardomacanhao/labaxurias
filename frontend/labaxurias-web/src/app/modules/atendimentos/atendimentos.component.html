@@ -40,7 +40,7 @@
   @if (selectedEntities.length === 0) {
     <div class="placeholder-message">
       <p>Nenhuma entidade selecionada para esta gira.</p>
-      <p class="sub-text">Clique em "Adicionar entidade" para começar.</p>
+      <p class="sub-text">Clique em "Adicionar entidade" para comecar.</p>
     </div>
   } @else {
     <div class="entities-grid">
@@ -104,30 +104,17 @@
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 6h2v2H8zm6 0h2v2h-2zM8 11h2v2H8zm6 0h2v2h-2zm-6 5h2v2H8zm6 0h2v2h-2z"/></svg>
               </div>
               <span class="item-number">{{ i + 1 }}</span>
-              @if (editingQueueItemId === item.id) {
-                <input type="text" class="edit-input" [(ngModel)]="editingQueueItemName" (keyup.enter)="saveEditQueueItem()" (blur)="saveEditQueueItem()">
-              } @else {
-                <span class="item-name editable-name" (click)="startEditQueueItem(item)">{{ item.name }}</span>
-              }
+              <span class="item-name editable-name" (click)="startEditQueueItem(item)">{{ item.name }}</span>
               <div class="item-actions">
-                @if (editingQueueItemId !== item.id) {
-                  <button class="icon-btn" (click)="startEditQueueItem(item)" title="Editar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </button>
-                  <button class="icon-btn" (click)="openTransferItemModal(item)" title="Transferir">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                  </button>
-                  <button class="icon-btn delete" (click)="confirmDeleteQueueItem(item)" title="Excluir">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                  </button>
-                } @else {
-                  <button class="icon-btn save" (click)="saveEditQueueItem()" title="Salvar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                  </button>
-                  <button class="icon-btn cancel" (click)="cancelEditQueueItem()" title="Cancelar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                }
+                <button class="icon-btn" (click)="startEditQueueItem(item)" title="Editar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="icon-btn" (click)="openTransferItemModal(item)" title="Transferir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                </button>
+                <button class="icon-btn delete" (click)="confirmDeleteQueueItem(item)" title="Excluir">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
               </div>
             </div>
           } @empty {
@@ -143,11 +130,32 @@
   </div>
 }
 
+@if (showEditQueueItemModal && editingQueueItemId) {
+  <div class="modal-overlay" (click)="cancelEditQueueItem()">
+    <div class="modal-content edit-consulente-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Editar Consulente</h2>
+        <button class="modal-close" (click)="cancelEditQueueItem()">×</button>
+      </div>
+      <div class="modal-body">
+        <label class="edit-label">
+          Nome do consulente
+          <input type="text" class="edit-input modal-edit-input" [(ngModel)]="editingQueueItemName" (keyup.enter)="saveEditQueueItem()" autofocus>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cancelEditQueueItem()">Cancelar</button>
+        <button class="btn-primary" (click)="saveEditQueueItem()">Salvar</button>
+      </div>
+    </div>
+  </div>
+}
+
 @if (showDeleteConfirmModal && itemToDelete) {
   <div class="modal-overlay" (click)="cancelDeleteQueueItem()">
     <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Confirmar Exclusão</h2>
+        <h2>Confirmar Exclusao</h2>
         <button class="modal-close" (click)="cancelDeleteQueueItem()">×</button>
       </div>
       <div class="modal-body">
@@ -170,7 +178,7 @@
       </div>
       <div class="modal-body">
         <p class="remove-warning">A entidade "<strong>{{ entityToRemove.entityName }}</strong>" possui {{ (entityQueues[entityToRemove.entityId] || []).length }} consulente(s) na fila.</p>
-        <p class="remove-instruction">O que você deseja fazer com esses consulentes?</p>
+        <p class="remove-instruction">O que voce deseja fazer com esses consulentes?</p>
         <div class="remove-options">
           <div class="remove-option" [class.selected]="removeEntityAction === 'transfer'" (click)="removeEntityAction = 'transfer'">
             <div class="remove-option-icon">
@@ -178,7 +186,7 @@
             </div>
             <div class="remove-option-content">
               <strong>Transferir para outra entidade</strong>
-              <span>Mover todos os consulentes para outra entidade da sessão</span>
+              <span>Mover todos os consulentes para outra entidade da sessao</span>
             </div>
           </div>
           <div class="remove-option" [class.selected]="removeEntityAction === 'delete'" (click)="removeEntityAction = 'delete'">
@@ -263,7 +271,7 @@
   <div class="modal-overlay" (click)="closeMediumModal()">
     <div class="modal-content medium-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Selecione os Médiuns</h2>
+        <h2>Selecione os Mediuns</h2>
         <button class="modal-close" (click)="closeMediumModal()">×</button>
       </div>
       <div class="modal-body">
@@ -277,7 +285,7 @@
               </div>
               <span class="medium-name">{{ medium.name }}</span>
             </div>
-          } @empty { Nenhum médium cadastrado. }
+          } @empty { Nenhum medium cadastrado. }
         </div>
       </div>
       <div class="modal-footer">
@@ -296,7 +304,7 @@
         <button class="modal-close" (click)="closeEntityModal()">×</button>
       </div>
       <div class="modal-body">
-        <p class="modal-instruction">Selecione as entidades que deseja adicionar à gira:</p>
+        <p class="modal-instruction">Selecione as entidades que deseja adicionar a gira:</p>
         <div class="entities-container">
           @for (item of mediumsWithEntities; track item.medium.id) {
             <div class="medium-box">
@@ -311,11 +319,11 @@
                     </div>
                     <span class="entity-name">{{ entity.name }}</span>
                   </div>
-                } @empty { Nenhuma entidade disponível deste médium. }
+                } @empty { Nenhuma entidade disponivel deste medium. }
               </div>
             </div>
           } @empty {
-            <div class="empty-list">Nenhuma entidade disponível para adicionar.</div>
+            <div class="empty-list">Nenhuma entidade disponivel para adicionar.</div>
           }
         </div>
       </div>
@@ -331,11 +339,11 @@
   <div class="modal-overlay" (click)="cancelRemoveEmptyEntity()">
     <div class="modal-content confirm-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Confirmar Remoção</h2>
+        <h2>Confirmar Remocao</h2>
         <button class="modal-close" (click)="cancelRemoveEmptyEntity()">×</button>
       </div>
       <div class="modal-body">
-        <p class="confirm-text">Tem certeza que deseja remover a entidade "<strong>{{ entityToRemoveEmpty.entityName }}</strong>" da sessão?</p>
+        <p class="confirm-text">Tem certeza que deseja remover a entidade "<strong>{{ entityToRemoveEmpty.entityName }}</strong>" da sessao?</p>
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" (click)="cancelRemoveEmptyEntity()">Cancelar</button>
@@ -355,7 +363,7 @@
   </svg>
 </button>
 
-<!-- FAB de Calendário (Mobile) -->
+<!-- FAB de Calendario (Mobile) -->
 <button class="fab-calendar" (click)="openCalendar()" title="Alterar data">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -364,3 +372,4 @@
     <line x1="3" y1="10" x2="21" y2="10"/>
   </svg>
 </button>
+

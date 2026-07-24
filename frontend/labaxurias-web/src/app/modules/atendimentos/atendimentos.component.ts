@@ -45,6 +45,7 @@ export class AtendimentosComponent implements OnInit {
   newConsulenteName: string = '';
   editingQueueItemId: string | null = null;
   editingQueueItemName: string = '';
+  showEditQueueItemModal: boolean = false;
   
   showDeleteConfirmModal: boolean = false;
   itemToDelete: QueueItem | null = null;
@@ -241,6 +242,7 @@ export class AtendimentosComponent implements OnInit {
     this.activeEntity = null;
     this.editingQueueItemId = null;
     this.editingQueueItemName = '';
+    this.showEditQueueItemModal = false;
     this.saveSession();
     this.cdr.detectChanges();
   }
@@ -424,6 +426,7 @@ export class AtendimentosComponent implements OnInit {
   startEditQueueItem(item: QueueItem): void {
     this.editingQueueItemId = item.id;
     this.editingQueueItemName = item.name;
+    this.showEditQueueItemModal = true;
   }
 
   saveEditQueueItem(): void {
@@ -435,11 +438,15 @@ export class AtendimentosComponent implements OnInit {
       queue[idx].name = this.editingQueueItemName.trim();
     }
     this.editingQueueItemId = null;
+    this.editingQueueItemName = '';
+    this.showEditQueueItemModal = false;
     this.saveSession();
   }
 
   cancelEditQueueItem(): void {
     this.editingQueueItemId = null;
+    this.editingQueueItemName = '';
+    this.showEditQueueItemModal = false;
   }
 
   dropQueue(event: CdkDragDrop<QueueItem[]>): void {

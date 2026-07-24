@@ -89,6 +89,16 @@
       <span class="label">{{ username }}</span>
     </div>
 
+    <a (click)="openPublicSettingsModal()" class="menu-item settings-btn">
+      <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/>
+          <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.1 2.1 0 0 1-2.97 2.97l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.09 1.65V22a2.1 2.1 0 0 1-4.2 0v-.09a1.8 1.8 0 0 0-1.18-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06a2.1 2.1 0 0 1-2.97-2.97l.06-.06a1.8 1.8 0 0 0 .36-1.98 1.8 1.8 0 0 0-1.65-1.09H2a2.1 2.1 0 0 1 0-4.2h.09A1.8 1.8 0 0 0 3.74 9.2a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.1 2.1 0 0 1 2.97-2.97l.06.06a1.8 1.8 0 0 0 1.98.36H8.4A1.8 1.8 0 0 0 9.5 3V2a2.1 2.1 0 0 1 4.2 0v.09a1.8 1.8 0 0 0 1.09 1.65 1.8 1.8 0 0 0 1.98-.36l.06-.06a2.1 2.1 0 0 1 2.97 2.97l-.06.06a1.8 1.8 0 0 0-.36 1.98v.07A1.8 1.8 0 0 0 21 9.5h1a2.1 2.1 0 0 1 0 4.2h-.09A1.8 1.8 0 0 0 20.26 15h-.86Z"/>
+        </svg>
+      </span>
+      <span class="label">Config. Painel</span>
+    </a>
+
     <a routerLink="/relatorios" routerLinkActive="active" class="menu-item" (click)="closeMobileMenu()">
       <span class="icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -114,6 +124,91 @@
     </a>
   </div>
 </nav>
+
+@if (showPublicSettingsModal) {
+  <div class="modal-overlay" (click)="closePublicSettingsModal()">
+    <div class="modal-content public-settings-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Configurar Painel</h2>
+        <button type="button" class="modal-close" (click)="closePublicSettingsModal()">×</button>
+      </div>
+      <div class="modal-body public-settings-body">
+        <label>
+          Nome do topo
+          <input type="text" [(ngModel)]="publicSettings.headerTitle">
+        </label>
+        <label>
+          Subtitulo do topo
+          <input type="text" [(ngModel)]="publicSettings.headerSubtitle">
+        </label>
+        <label>
+          Nome
+          <input type="text" [(ngModel)]="publicSettings.brandName">
+        </label>
+        <label>
+          Logo
+          <div class="settings-row">
+            <input type="text" [(ngModel)]="publicSettings.logoPath">
+            <button type="button" class="btn-inline" (click)="publicLogoInput.click()">Escolher</button>
+            <input #publicLogoInput type="file" accept="image/*" class="file-input-hidden" (change)="selectPublicLogo($event)">
+          </div>
+        </label>
+        <label>
+          Tempo da chamada
+          <input type="number" min="3" max="30" [(ngModel)]="publicSettings.displaySeconds">
+        </label>
+        <label>
+          Fonte do texto
+          <select [(ngModel)]="publicSettings.fontFamily">
+            @for (font of fontOptions; track font.value) {
+              <option [value]="font.value">{{ font.label }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Cor da fonte
+          <div class="settings-row color-row">
+            <input type="color" [(ngModel)]="publicSettings.textColor">
+            <input type="text" [(ngModel)]="publicSettings.textColor">
+          </div>
+        </label>
+        <label>
+          Tamanho da fonte
+          <div class="settings-row range-row">
+            <input type="range" min="24" max="120" [(ngModel)]="publicSettings.textSize">
+            <input type="number" min="24" max="120" [(ngModel)]="publicSettings.textSize">
+          </div>
+        </label>
+        <label>
+          Tamanho da imagem
+          <div class="settings-row range-row">
+            <input type="range" min="120" max="700" [(ngModel)]="publicSettings.logoSize">
+            <input type="number" min="120" max="700" [(ngModel)]="publicSettings.logoSize">
+          </div>
+        </label>
+        <label>
+          Fonte ultimos chamados
+          <div class="settings-row range-row">
+            <input type="range" min="8" max="22" [(ngModel)]="publicSettings.recentFontSize">
+            <input type="number" min="8" max="22" [(ngModel)]="publicSettings.recentFontSize">
+          </div>
+        </label>
+        <label>
+          Animacao do texto
+          <select [(ngModel)]="publicSettings.textAnimation">
+            @for (animation of animationOptions; track animation.value) {
+              <option [value]="animation.value">{{ animation.label }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closePublicSettingsModal()">Cancelar</button>
+        <button type="button" class="btn-save" (click)="savePublicSettings()">Salvar</button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (showLogoutModal) {
   <div class="modal-overlay" (click)="closeLogoutModal()">

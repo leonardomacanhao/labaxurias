@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg-base: #060302;
   --bg-surface: #0e0906;
   --bg-elevated: #1a120c;
@@ -174,7 +174,7 @@ h1, h2, h3, h4 {
   to { transform: rotate(360deg); }
 }
 
-/* === NOVAS ANIMAÇÕES DE MOVIMENTO === */
+/* === NOVAS ANIMAÃ‡Ã•ES DE MOVIMENTO === */
 
 @keyframes shimmer-slide {
   0% { background-position: -200% center; }
